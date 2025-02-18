@@ -71,6 +71,9 @@ import javolution.xml.XMLSerializable;
  * @version 5.4.5, March 23, 2010
  */
 public abstract class FastCollection<E> implements Collection<E>, XMLSerializable, Realtime {
+	/**
+	 *
+	 */
 	private static final long serialVersionUID = -5829535107543118923L;
 	/**
 	 * Default constructor.
@@ -242,7 +245,8 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 	 */
 	public boolean addAll(Collection<? extends E> c) {
 		boolean modified = false;
-		for(Iterator<? extends E> itr = c.iterator(); itr.hasNext();) {
+		Iterator<? extends E> itr = c.iterator();
+		while(itr.hasNext()) {
 			if(add(itr.next())) {
 				modified = true;
 			}
@@ -258,7 +262,8 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 	 *         of the specified collection; <code>false</code> otherwise.
 	 */
 	public boolean containsAll(Collection<?> c) {
-		for(Iterator<?> itr = c.iterator(); itr.hasNext();) {
+		Iterator<?> itr = c.iterator();
+		while(itr.hasNext()) {
 			if(!contains(itr.next()))
 				return false;
 		}
@@ -377,7 +382,7 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 	 * @return <code>toText().toString()</code>
 	 */
 	@Override
-	public String toString() {
+	public final String toString() {
 		return toText().toString();
 	}
 	/**
@@ -466,7 +471,10 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 	/**
 	 * This inner class represents an unmodifiable view over the collection.
 	 */
-	private class Unmodifiable extends FastCollection implements List, Set {
+	class Unmodifiable extends FastCollection implements List, Set {
+		/**
+		 *
+		 */
 		private static final long serialVersionUID = -1166978390107744325L;
 		// Implements abstract method.
 		@Override
@@ -552,6 +560,9 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 	 * collection.
 	 */
 	private class Shared implements Collection, Serializable {
+		/**
+		 *
+		 */
 		private static final long serialVersionUID = -3501671857535959375L;
 		public synchronized int size() {
 			return FastCollection.this.size();

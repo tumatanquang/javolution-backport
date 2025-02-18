@@ -10,7 +10,6 @@ package javolution.util;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -52,7 +51,7 @@ import javolution.lang.Reusable;
  * @version 5.4.5, August 20, 2007
  */
 public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable, RandomAccess {
-	private static final long serialVersionUID = 0x562;
+	private static final long serialVersionUID = 0x561;
 	/**
 	 * Holds the factory for this fast table.
 	 */
@@ -598,8 +597,8 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 	}
 	// Overrides  to return a list (JDK1.5+).
 	@Override
-	public FastTable<E> shared() {
-		return new SynchronizedFastTable(this);
+	public List<E> shared() {
+		return (List<E>) super.shared();
 	}
 	// Overrides (optimization).
 	@Override
@@ -664,219 +663,13 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 			}
 		});
 	}
-	private static final class SynchronizedFastTable<E> extends FastTable<E> implements Collection<E>, Serializable {
-		private static final long serialVersionUID = 0x563;
-		private final FastTable<E> list; // Backing FastTable
-		private final Object mutex; // Object on which to synchronize
-		private SynchronizedFastTable(FastTable<E> target) {
-			if(target == null)
-				throw new NullPointerException();
-			list = target;
-			mutex = this;
-		}
-		@Override
-		public void setSize(int size) {
-			synchronized(mutex) {
-				list.setSize(size);
-			}
-		}
-		@Override
-		public E get(int index) {
-			synchronized(mutex) {
-				return list.get(index);
-			}
-		}
-		@Override
-		public E set(int index, E value) {
-			synchronized(mutex) {
-				return list.set(index, value);
-			}
-		}
-		@Override
-		public boolean add(E e) {
-			synchronized(mutex) {
-				return list.add(e);
-			}
-		}
-		@Override
-		public E getFirst() {
-			synchronized(mutex) {
-				return list.getFirst();
-			}
-		}
-		@Override
-		public E getLast() {
-			synchronized(mutex) {
-				return list.getLast();
-			}
-		}
-		@Override
-		public void addLast(E value) {
-			synchronized(mutex) {
-				list.addLast(value);
-			}
-		}
-		@Override
-		public E removeLast() {
-			synchronized(mutex) {
-				return list.removeLast();
-			}
-		}
-		@Override
-		public void clear() {
-			synchronized(mutex) {
-				list.clear();
-			}
-		}
-		@Override
-		public boolean isEmpty() {
-			synchronized(mutex) {
-				return list.isEmpty();
-			}
-		}
-		@Override
-		public void reset() {
-			synchronized(mutex) {
-				list.reset();
-			}
-		}
-		@Override
-		public boolean addAll(Collection<? extends E> c) {
-			synchronized(mutex) {
-				return list.addAll(c);
-			}
-		}
-		@Override
-		public void add(int index, E value) {
-			synchronized(mutex) {
-				list.add(index, value);
-			}
-		}
-		@Override
-		public E remove(int index) {
-			synchronized(mutex) {
-				return list.remove(index);
-			}
-		}
-		@Override
-		public void removeRange(int fromIndex, int toIndex) {
-			synchronized(mutex) {
-				list.removeRange(fromIndex, toIndex);
-			}
-		}
-		@Override
-		public int indexOf(Object value) {
-			synchronized(mutex) {
-				return list.indexOf(value);
-			}
-		}
-		@Override
-		public int lastIndexOf(Object value) {
-			synchronized(mutex) {
-				return list.lastIndexOf(value);
-			}
-		}
-		@Override
-		public Iterator<E> iterator() {
-			return list.iterator(); // Must be manually synched by user!
-		}
-		@Override
-		public ListIterator<E> listIterator() {
-			return list.listIterator(); // Must be manually synched by user!
-		}
-		@Override
-		public ListIterator<E> listIterator(int index) {
-			return list.listIterator(index); // Must be manually synched by user!
-		}
-		@Override
-		public List<E> subList(int fromIndex, int toIndex) {
-			synchronized(mutex) {
-				return list.subList(fromIndex, toIndex);
-			}
-		}
-		@Override
-		public void trimToSize() {
-			synchronized(mutex) {
-				list.trimToSize();
-			}
-		}
-		@Override
-		public FastTable<E> sort() {
-			synchronized(mutex) {
-				return list.sort();
-			}
-		}
-		@Override
-		public FastTable<E> setValueComparator(FastComparator<? super E> comparator) {
-			synchronized(mutex) {
-				return list.setValueComparator(comparator);
-			}
-		}
-		@Override
-		public FastComparator<? super E> getValueComparator() {
-			synchronized(mutex) {
-				return list.getValueComparator();
-			}
-		}
-		@Override
-		public int size() {
-			synchronized(mutex) {
-				return list.size();
-			}
-		}
-		@Override
-		public boolean contains(Object o) {
-			synchronized(mutex) {
-				return list.contains(o);
-			}
-		}
-		@Override
-		public Object[] toArray() {
-			synchronized(mutex) {
-				return list.toArray();
-			}
-		}
-		@Override
-		public <T> T[] toArray(T[] a) {
-			synchronized(mutex) {
-				return list.toArray(a);
-			}
-		}
-		@Override
-		public boolean remove(Object o) {
-			synchronized(mutex) {
-				return list.remove(o);
-			}
-		}
-		@Override
-		public boolean containsAll(Collection<?> coll) {
-			synchronized(mutex) {
-				return list.containsAll(coll);
-			}
-		}
-		@Override
-		public boolean removeAll(Collection<?> coll) {
-			synchronized(mutex) {
-				return list.removeAll(coll);
-			}
-		}
-		@Override
-		public boolean retainAll(Collection<?> coll) {
-			synchronized(mutex) {
-				return list.retainAll(coll);
-			}
-		}
-		@Override
-		public String toString() {
-			synchronized(mutex) {
-				return list.toString();
-			}
-		}
-	}
 	/**
-	* This inner class implements a sub-table.
-	*/
+	 * This inner class implements a sub-table.
+	 */
 	private static final class SubTable extends FastCollection implements List, RandomAccess {
+		/**
+		 *
+		 */
 		private static final long serialVersionUID = 8961471037048267243L;
 		private static final ObjectFactory FACTORY = new ObjectFactory() {
 			@Override
