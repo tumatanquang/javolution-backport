@@ -242,7 +242,8 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 	 */
 	public boolean addAll(Collection<? extends E> c) {
 		boolean modified = false;
-		for(Iterator<? extends E> itr = c.iterator(); itr.hasNext();) {
+		Iterator<? extends E> itr = c.iterator();
+		while(itr.hasNext()) {
 			if(add(itr.next())) {
 				modified = true;
 			}
@@ -258,7 +259,8 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 	 *         of the specified collection; <code>false</code> otherwise.
 	 */
 	public boolean containsAll(Collection<?> c) {
-		for(Iterator<?> itr = c.iterator(); itr.hasNext();) {
+		Iterator<?> itr = c.iterator();
+		while(itr.hasNext()) {
 			if(!contains(itr.next()))
 				return false;
 		}

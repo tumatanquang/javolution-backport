@@ -625,7 +625,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 		this.setValueComparator(FastComparator.DEFAULT);
 	}
 	private static final class SynchronizedFastList<E> extends FastList<E> implements Collection<E>, Serializable {
-		private static final long serialVersionUID = 0x563;
+		private static final long serialVersionUID = 0x562;
 		private final FastList<E> list; // Backing FastList
 		private final Object mutex; // Object on which to synchronize
 		private SynchronizedFastList(FastList<E> target) {
@@ -635,147 +635,21 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 			mutex = this;
 		}
 		@Override
-		public boolean add(E e) {
-			synchronized(mutex) {
-				return list.add(e);
-			}
-		}
-		@Override
-		public E get(int index) {
-			synchronized(mutex) {
-				return list.get(index);
-			}
-		}
-		@Override
-		public E set(int index, E value) {
-			synchronized(mutex) {
-				return list.set(index, value);
-			}
-		}
-		@Override
-		public void add(int index, E value) {
-			synchronized(mutex) {
-				list.add(index, value);
-			}
-		}
-		@Override
-		public boolean addAll(Collection<? extends E> c) {
-			synchronized(mutex) {
-				return list.addAll(c);
-			}
-		}
-		@Override
-		public E remove(int index) {
-			synchronized(mutex) {
-				return list.remove(index);
-			}
-		}
-		@Override
-		public int indexOf(Object value) {
-			synchronized(mutex) {
-				return list.indexOf(value);
-			}
-		}
-		@Override
-		public int lastIndexOf(Object value) {
-			synchronized(mutex) {
-				return list.lastIndexOf(value);
-			}
-		}
-		@Override
-		public Iterator<E> iterator() {
-			return list.iterator(); // Must be manually synched by user!
-		}
-		@Override
-		public ListIterator<E> listIterator() {
-			return list.listIterator(); // Must be manually synched by user!
-		}
-		@Override
-		public ListIterator<E> listIterator(int index) {
-			return list.listIterator(index); // Must be manually synched by user!
-		}
-		@Override
-		public List<E> subList(int fromIndex, int toIndex) {
-			synchronized(mutex) {
-				return list.subList(fromIndex, toIndex);
-			}
-		}
-		@Override
-		public E getFirst() {
-			synchronized(mutex) {
-				return list.getFirst();
-			}
-		}
-		@Override
-		public E getLast() {
-			synchronized(mutex) {
-				return list.getLast();
-			}
-		}
-		@Override
-		public void addFirst(E value) {
-			synchronized(mutex) {
-				list.addFirst(value);
-			}
-		}
-		@Override
-		public void addLast(E value) {
-			synchronized(mutex) {
-				list.addLast(value);
-			}
-		}
-		@Override
-		public E removeFirst() {
-			synchronized(mutex) {
-				return list.removeFirst();
-			}
-		}
-		@Override
-		public E removeLast() {
-			synchronized(mutex) {
-				return list.removeLast();
-			}
-		}
-		@Override
-		public void addBefore(Node<E> next, E value) {
-			synchronized(mutex) {
-				list.addBefore(next, value);
-			}
-		}
-		@Override
-		public Node<E> head() {
-			synchronized(mutex) {
-				return list.head();
-			}
-		}
-		@Override
-		public Node<E> tail() {
-			synchronized(mutex) {
-				return list.tail();
-			}
-		}
-		@Override
-		public boolean contains(Object o) {
-			synchronized(mutex) {
-				return list.contains(o);
-			}
-		}
-		@Override
 		public int size() {
 			synchronized(mutex) {
 				return list.size();
 			}
 		}
 		@Override
-		public void clear() {
-			synchronized(mutex) {
-				list.clear();
-			}
-		}
-		@Override
 		public boolean isEmpty() {
 			synchronized(mutex) {
 				return list.isEmpty();
+			}
+		}
+		@Override
+		public boolean contains(Object o) {
+			synchronized(mutex) {
+				return list.contains(o);
 			}
 		}
 		@Override
@@ -791,6 +665,16 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 			}
 		}
 		@Override
+		public Iterator<E> iterator() {
+			return list.iterator(); // Must be manually synched by user!
+		}
+		@Override
+		public boolean add(E e) {
+			synchronized(mutex) {
+				return list.add(e);
+			}
+		}
+		@Override
 		public boolean remove(Object o) {
 			synchronized(mutex) {
 				return list.remove(o);
@@ -800,6 +684,12 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 		public boolean containsAll(Collection<?> coll) {
 			synchronized(mutex) {
 				return list.containsAll(coll);
+			}
+		}
+		@Override
+		public boolean addAll(Collection<? extends E> coll) {
+			synchronized(mutex) {
+				return list.addAll(coll);
 			}
 		}
 		@Override
@@ -815,9 +705,20 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 			}
 		}
 		@Override
+		public void clear() {
+			synchronized(mutex) {
+				list.clear();
+			}
+		}
+		@Override
 		public String toString() {
 			synchronized(mutex) {
 				return list.toString();
+			}
+		}
+		private void writeObject(ObjectOutputStream s) throws IOException {
+			synchronized(mutex) {
+				s.defaultWriteObject();
 			}
 		}
 	}
