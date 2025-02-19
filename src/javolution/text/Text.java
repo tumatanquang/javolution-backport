@@ -16,8 +16,8 @@ import javolution.io.UTF8StreamWriter;
 import javolution.lang.MathLib;
 import javolution.lang.Realtime;
 import javolution.lang.ValueType;
-import javolution.util.FastComparator;
 import javolution.util.FastMap;
+import javolution.util.internal.FastComparator;
 import javolution.xml.XMLSerializable;
 /**
  * <p> This class represents an immutable character sequence with

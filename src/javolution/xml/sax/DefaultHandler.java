@@ -85,8 +85,10 @@ public class DefaultHandler implements ContentHandler, ErrorHandler {
 	 * @param  atts the attributes attached to the element.  If there are no
 	 *         attributes, it shall be an empty {@link Attributes} object.
 	 * @throws org.xml.sax.SAXException any SAX exception.
+	 * 
+	 * @since 5.6.4 Change method {@code startElement} to {@code static}
 	 */
-	protected final void startElement(CharArray uri, CharArray localName, CharArray qName, org.xml.sax.Attributes atts)
+	protected static final void startElement(CharArray uri, CharArray localName, CharArray qName, org.xml.sax.Attributes atts)
 			throws SAXException {
 		throw new UnsupportedOperationException();
 	}

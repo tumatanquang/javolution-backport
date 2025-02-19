@@ -910,10 +910,8 @@ public abstract class XMLFormat<T> {
 	}
 	// For J2ME Compatibility.
 	private static CharSequence toCsq(Object str) {
-		/**/
-		if(true)
+		if(str instanceof CharSequence)
 			return (CharSequence) str;
-		/**/
 		return str == null ? null : Text.valueOf(str);
 	}
 }

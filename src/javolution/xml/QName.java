@@ -12,8 +12,8 @@ import javolution.lang.Immutable;
 import javolution.text.CharArray;
 import javolution.text.Text;
 import javolution.text.TextBuilder;
-import javolution.util.FastComparator;
 import javolution.util.FastMap;
+import javolution.util.internal.FastComparator;
 /**
  * <p> This class represents unique identifiers for XML elements (tags) or
  *     attributes (names).</p>
@@ -208,10 +208,8 @@ public final class QName implements XMLSerializable, Immutable, CharSequence {
 	}
 	// For J2ME Compatibility.
 	static CharSequence j2meToCharSeq(Object str) {
-		/**/
-		if(true)
+		if(str instanceof CharSequence)
 			return (CharSequence) str;
-		/**/
 		return str == null ? null : Text.valueOf(str);
 	}
 }

@@ -329,11 +329,12 @@ public abstract class TimeContext extends TestContext {
 		}
 	}
 	private static long nanoTime() {
-		/**/
-		if(true)
+		try {
 			return System.nanoTime();
-		/**/
-		return System.currentTimeMillis() * 1000000;
+		}
+		catch(NoSuchMethodError e) {
+			return System.currentTimeMillis() * 1000000;
+		}
 	}
 	// TestContext implementation with no output (just validation).
 	private static final class Regression extends TimeContext {

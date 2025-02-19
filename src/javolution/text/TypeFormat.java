@@ -688,7 +688,7 @@ public final class TypeFormat {
 	// For J2ME Compatibility.
 	static CharSequence j2meToCharSeq(Object str) {
 		/**/
-		if(true)
+		if(str instanceof CharSequence)
 			return (CharSequence) str;
 		/**/
 		return str == null ? null : Text.valueOf(str);

@@ -10,7 +10,6 @@ package javolution.util;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +21,10 @@ import javolution.context.ObjectFactory;
 import javolution.context.PersistentContext;
 import javolution.lang.MathLib;
 import javolution.lang.Reusable;
+import javolution.util.internal.FastComparator;
+import javolution.util.internal.collection.AbstractCollection;
+import javolution.util.internal.collection.FastCollection;
+import javolution.util.internal.collection.SharedCollectionImpl;
 /**
  * <p> This class represents a random access collection with real-time behavior
  *     (smooth capacity increase).</p>
@@ -51,8 +54,8 @@ import javolution.lang.Reusable;
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.4.5, August 20, 2007
  */
-public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable, RandomAccess {
-	private static final long serialVersionUID = 0x562;
+public class FastTable<E> extends AbstractCollection<E> implements List<E>, Reusable, RandomAccess {
+	private static final long serialVersionUID = 0x564;
 	/**
 	 * Holds the factory for this fast table.
 	 */
@@ -177,6 +180,7 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 	 * @throws IndexOutOfBoundsException if <code>(index < 0) ||
 	 *         (index >= size())</code>
 	 */
+	@Override
 	public E get(int index) { // Short to be inlined.
 		if(index >= _size)
 			throw new IndexOutOfBoundsException();
@@ -192,6 +196,7 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 	 * @throws IndexOutOfBoundsException if <code>(index < 0) ||
 	 *         (index >= size())</code>
 	 */
+	@Override
 	public E set(int index, E value) {
 		if(index >= _size)
 			throw new IndexOutOfBoundsException();
@@ -299,13 +304,14 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 	 * @throws IndexOutOfBoundsException if <code>(index < 0) ||
 	 *         (index > size())</code>
 	 */
+	@Override
 	public boolean addAll(int index, Collection<? extends E> values) {
 		if(index < 0 || index > _size)
 			throw new IndexOutOfBoundsException("index: " + index);
 		final int shift = values.size();
 		shiftRight(index, shift);
 		Iterator<? extends E> valuesIterator = values.iterator();
-		for(int i = index, n = index + shift; i < n; i++) {
+		for(int i = index, n = index + shift; i < n; ++i) {
 			_high[i >> B1][i & M1] = valuesIterator.next();
 		}
 		_size += shift; // Increases size last (thread-safe)
@@ -325,6 +331,7 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 	 * @throws IndexOutOfBoundsException if <code>(index < 0) ||
 	 *         (index > size())</code>
 	 */
+	@Override
 	public void add(int index, E value) {
 		if(index < 0 || index > _size)
 			throw new IndexOutOfBoundsException("index: " + index);
@@ -346,6 +353,7 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 	 * @throws IndexOutOfBoundsException if <code>(index < 0) ||
 	 *         (index >= size())</code>
 	 */
+	@Override
 	public E remove(int index) {
 		final E previous = get(index);
 		shiftLeft(index + 1, 1);
@@ -372,7 +380,7 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 		final int shift = toIndex - fromIndex;
 		shiftLeft(toIndex, shift);
 		_size -= shift; // No need for volatile, removal are not thread-safe.
-		for(int i = _size, n = _size + shift; i < n; i++) {
+		for(int i = _size, n = _size + shift; i < n; ++i) {
 			_high[i >> B1][i & M1] = null; // Deallocates for GC.
 		}
 	}
@@ -384,6 +392,7 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 	 * @return the index in this table of the first occurrence of the specified
 	 *         value, or -1 if this table does not contain this value.
 	 */
+	@Override
 	public int indexOf(Object value) {
 		final FastComparator comp = this.getValueComparator();
 		for(int i = 0; i < _size;) {
@@ -405,6 +414,7 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 	 * @return the index in this table of the last occurrence of the specified
 	 *         value, or -1 if this table does not contain this value.
 	 */
+	@Override
 	public int lastIndexOf(Object value) {
 		final FastComparator comp = this.getValueComparator();
 		for(int i = _size - 1; i >= 0;) {
@@ -436,6 +446,7 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 	 *
 	 * @return an iterator over this list values.
 	 */
+	@Override
 	public ListIterator<E> listIterator() {
 		return FastTableIterator.valueOf(this, 0, 0, _size);
 	}
@@ -452,6 +463,7 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 	 * @throws IndexOutOfBoundsException if the index is out of range
 	 *         [code](index < 0 || index > size())[/code]
 	 */
+	@Override
 	public ListIterator<E> listIterator(int index) {
 		if(index < 0 || index > _size)
 			throw new IndexOutOfBoundsException();
@@ -488,6 +500,7 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 	 * @throws IndexOutOfBoundsException if [code](fromIndex < 0 ||
 	 *          toIndex > size || fromIndex > toIndex)[/code]
 	 */
+	@Override
 	public List<E> subList(int fromIndex, int toIndex) {
 		if(fromIndex < 0 || toIndex > _size || fromIndex > toIndex)
 			throw new IndexOutOfBoundsException(
@@ -534,10 +547,10 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 		down = l;
 		do {
 			while(cmp.compare(get(up), piv) <= 0 && up < l) {
-				up++;
+				++up;
 			}
 			while(cmp.compare(get(down), piv) > 0 && down > f) {
-				down--;
+				--down;
 			}
 			if(up < down) { // Swaps.
 				E temp = get(up);
@@ -599,7 +612,7 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 	// Overrides  to return a list (JDK1.5+).
 	@Override
 	public FastTable<E> shared() {
-		return new SynchronizedFastTable(this);
+		return new FastTable<E>(new SharedCollectionImpl<E>(this));
 	}
 	// Overrides (optimization).
 	@Override
@@ -617,7 +630,7 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 		_low = (E[]) new Object[_capacity];
 		_high = (E[][]) new Object[1][];
 		_high[0] = _low;
-		for(int i = 0; i < size; i++) {
+		for(int i = -1; ++i < size;) {
 			addLast((E) stream.readObject());
 		}
 	}
@@ -626,7 +639,7 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 		stream.writeObject(getValueComparator());
 		final int size = _size;
 		stream.writeInt(size);
-		for(int i = 0; i < size; i++) {
+		for(int i = -1; ++i < size;) {
 			stream.writeObject(get(i));
 		}
 	}
@@ -664,11 +677,11 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 			}
 		});
 	}
-	private static final class SynchronizedFastTable<E> extends FastTable<E> implements Collection<E>, Serializable {
-		private static final long serialVersionUID = 0x563;
+	/*private static final class Shared<E> extends FastTable<E> implements Collection<E>, Serializable {
+		private static final long serialVersionUID = 0x564;
 		private final FastTable<E> list; // Backing FastTable
 		private final Object mutex; // Object on which to synchronize
-		private SynchronizedFastTable(FastTable<E> target) {
+		private Shared(FastTable<E> target) {
 			if(target == null)
 				throw new NullPointerException();
 			list = target;
@@ -872,12 +885,12 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 				return list.toString();
 			}
 		}
-	}
+	}*/
 	/**
 	* This inner class implements a sub-table.
 	*/
 	private static final class SubTable extends FastCollection implements List, RandomAccess {
-		private static final long serialVersionUID = 8961471037048267243L;
+		private static final long serialVersionUID = 0x564;
 		private static final ObjectFactory FACTORY = new ObjectFactory() {
 			@Override
 			protected Object create() {
@@ -1065,7 +1078,7 @@ public class FastTable<E> extends FastCollection<E> implements List<E>, Reusable
 	}
 	// Shifts element from the specified index to the left (lower indexes).
 	private void shiftLeft(int index, int shift) {
-		for(int i = index; i < _size; i++) {
+		for(int i = index; i < _size; ++i) {
 			final int dest = i - shift;
 			_high[dest >> B1][dest & M1] = _high[i >> B1][i & M1];
 		}

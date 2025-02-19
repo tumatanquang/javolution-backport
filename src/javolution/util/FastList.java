@@ -20,6 +20,10 @@ import javax.realtime.MemoryArea;
 import javolution.context.ObjectFactory;
 import javolution.context.PersistentContext;
 import javolution.lang.Reusable;
+import javolution.util.internal.FastComparator;
+import javolution.util.internal.collection.AbstractCollection;
+import javolution.util.internal.collection.FastCollection;
+import javolution.util.internal.collection.SharedCollectionImpl;
 /**
  * <p> This class represents a linked list with real-time behavior;
  *     smooth capacity increase and no memory allocation as long as the
@@ -51,8 +55,8 @@ import javolution.lang.Reusable;
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 4.2, December 18, 2006
  */
-public class FastList<E> extends FastCollection<E> implements List<E>, Reusable {
-	private static final long serialVersionUID = 0x561;
+public class FastList<E> extends AbstractCollection<E> implements List<E>, Reusable {
+	private static final long serialVersionUID = 0x564;
 	/**
 	 * Holds the main list factory.
 	 */
@@ -113,7 +117,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 		_head._next = _tail;
 		_tail._previous = _head;
 		Node<E> previous = _tail;
-		for(int i = 0; i++ < capacity;) {
+		for(int i = -1; ++i < capacity;) {
 			Node<E> newNode = newNode();
 			newNode._previous = previous;
 			previous._next = newNode;
@@ -169,6 +173,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 	 * @throws IndexOutOfBoundsException if <code>(index < 0) ||
 	 *         (index >= size())</code>
 	 */
+	@Override
 	public E get(int index) {
 		if(index < 0 || index >= _size)
 			throw new IndexOutOfBoundsException("index: " + index);
@@ -184,6 +189,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 	 * @throws IndexOutOfBoundsException if <code>(index < 0) ||
 	 *         (index >= size())</code>
 	 */
+	@Override
 	public E set(int index, E value) {
 		if(index < 0 || index >= _size)
 			throw new IndexOutOfBoundsException("index: " + index);
@@ -203,6 +209,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 	 * @throws IndexOutOfBoundsException if <code>(index < 0) ||
 	 *         (index > size())</code>
 	 */
+	@Override
 	public void add(int index, E value) {
 		if(index < 0 || index > _size)
 			throw new IndexOutOfBoundsException("index: " + index);
@@ -222,12 +229,12 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 	 * @throws IndexOutOfBoundsException if <code>(index < 0) ||
 	 *         (index > size())</code>
 	 */
+	@Override
 	public boolean addAll(int index, Collection<? extends E> values) {
 		if(index < 0 || index > _size)
 			throw new IndexOutOfBoundsException("index: " + index);
 		final Node indexNode = nodeAt(index);
-		Iterator<? extends E> i = values.iterator();
-		while(i.hasNext()) {
+		for(Iterator<? extends E> i = values.iterator(); i.hasNext();) {
 			addBefore(indexNode, i.next());
 		}
 		return values.size() != 0;
@@ -243,6 +250,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 	 * @throws IndexOutOfBoundsException if <code>(index < 0) ||
 	 *         (index >= size())</code>
 	 */
+	@Override
 	public E remove(int index) {
 		if(index < 0 || index >= _size)
 			throw new IndexOutOfBoundsException("index: " + index);
@@ -259,6 +267,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 	 * @return the index in this list of the first occurrence of the specified
 	 *         value, or -1 if this list does not contain this value.
 	 */
+	@Override
 	public int indexOf(Object value) {
 		final FastComparator comp = this.getValueComparator();
 		int index = 0;
@@ -276,6 +285,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 	 * @return the index in this list of the last occurrence of the specified
 	 *         value, or -1 if this list does not contain this value.
 	 */
+	@Override
 	public int lastIndexOf(Object value) {
 		final FastComparator comp = this.getValueComparator();
 		int index = size() - 1;
@@ -303,6 +313,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 	 *
 	 * @return an iterator over this list values.
 	 */
+	@Override
 	public ListIterator<E> listIterator() {
 		return FastListIterator.valueOf(this, _head._next, 0, _size);
 	}
@@ -323,6 +334,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 	 * @throws IndexOutOfBoundsException if the index is out of range
 	 *        [code](index < 0 || index > size())[/code].
 	 */
+	@Override
 	public ListIterator<E> listIterator(int index) {
 		if(index < 0 || index > _size)
 			throw new IndexOutOfBoundsException("index: " + index);
@@ -359,6 +371,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 	 * @throws IndexOutOfBoundsException if [code](fromIndex < 0 ||
 	 *          toIndex > size || fromIndex < toIndex)[/code]
 	 */
+	@Override
 	public List<E> subList(int fromIndex, int toIndex) {
 		if(fromIndex < 0 || toIndex > _size || fromIndex > toIndex)
 			throw new IndexOutOfBoundsException(
@@ -502,7 +515,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 	@Override
 	public void delete(Record record) {
 		Node<E> node = (Node<E>) record;
-		_size--;
+		--_size;
 		node._value = null;
 		// Detaches.
 		node._previous._next = node._next;
@@ -566,7 +579,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 	// Overrides  to return a list (JDK1.5+).
 	@Override
 	public FastList<E> shared() {
-		return new SynchronizedFastList(this);
+		return new FastList<E>(new SharedCollectionImpl<E>(this));
 	}
 	/**
 	 * Returns a new node for this list; this method can be overriden by
@@ -624,11 +637,11 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 		clear();
 		this.setValueComparator(FastComparator.DEFAULT);
 	}
-	private static final class SynchronizedFastList<E> extends FastList<E> implements Collection<E>, Serializable {
-		private static final long serialVersionUID = 0x563;
+	/*private static final class Shared<E> extends FastList<E> implements Collection<E>, Serializable {
+		private static final long serialVersionUID = 0x564;
 		private final FastList<E> list; // Backing FastList
 		private final Object mutex; // Object on which to synchronize
-		private SynchronizedFastList(FastList<E> target) {
+		private Shared(FastList<E> target) {
 			if(target == null)
 				throw new NullPointerException();
 			list = target;
@@ -820,7 +833,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 				return list.toString();
 			}
 		}
-	}
+	}*/
 	/**
 	 * This class represents a {@link FastList} node; it allows for direct
 	 * iteration over the list {@link #getValue values}.
@@ -836,7 +849,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 	 *    }[/code]
 	 */
 	public static class Node<E> implements Record, Serializable {
-		private static final long serialVersionUID = 997407224295103168L;
+		private static final long serialVersionUID = 0x564;
 		/**
 		 * Holds the next node.
 		 */
@@ -874,7 +887,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 	 * This inner class implements a sub-list.
 	 */
 	private static final class SubList extends FastCollection implements List, Serializable {
-		private static final long serialVersionUID = -1224847103491317222L;
+		private static final long serialVersionUID = 0x564;
 		private static final ObjectFactory FACTORY = new ObjectFactory() {
 			@Override
 			protected Object create() {
@@ -924,8 +937,7 @@ public class FastList<E> extends FastCollection<E> implements List<E>, Reusable 
 			if(index < 0 || index > _size)
 				throw new IndexOutOfBoundsException("index: " + index);
 			final Node indexNode = nodeAt(index);
-			Iterator i = values.iterator();
-			while(i.hasNext()) {
+			for(Iterator i = values.iterator(); i.hasNext();) {
 				_list.addBefore(indexNode, i.next());
 			}
 			return values.size() != 0;

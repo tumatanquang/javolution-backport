@@ -7,7 +7,7 @@
  * freely granted, provided that this notice is preserved.
  */
 package javolution.text;
-import javolution.util.FastComparator;
+import javolution.util.internal.FastComparator;
 /**
  * <p> This class represents a {@link CharSequence}
  *     backed up by a <code>char</code> array. Instances of this class are

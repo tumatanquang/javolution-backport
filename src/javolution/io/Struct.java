@@ -391,7 +391,7 @@ public class Struct {
 			final int size = size();
 			final ByteBuffer buffer = getByteBuffer();
 			final int start = getByteBufferPosition();
-			for(int i = 0; i < size; i++) {
+			for(int i = -1; ++i < size;) {
 				int b = buffer.get(start + i) & 0xFF;
 				tmp.append(HEXA[b >> 4]);
 				tmp.append(HEXA[b & 0xF]);

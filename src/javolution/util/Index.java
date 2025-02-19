@@ -18,7 +18,7 @@ import javolution.text.Cursor;
 import javolution.text.Text;
 import javolution.text.TextFormat;
 import javolution.text.TypeFormat;
-import javolution.util.FastCollection.Record;
+import javolution.util.internal.collection.FastCollection.Record;
 import javolution.xml.XMLSerializable;
 /**
  * <p> This class represents a <b>unique</b> index which can be used instead of

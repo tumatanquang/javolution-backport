@@ -11,9 +11,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import javolution.context.LogContext;
 import javolution.text.TextBuilder;
-import javolution.util.FastComparator;
 import javolution.util.FastMap;
 import javolution.util.FastSet;
+import javolution.util.internal.FastComparator;
 /**
  * <p> This utility class greatly facilitates the use of reflection to invoke
  *     constructors or methods which may or may not exist at runtime or
@@ -400,7 +400,6 @@ public abstract class Reflection {
 						// Not found, continue.
 					}
 				}
-				/**/
 			}
 			if(cls != null) { // Cache the result.
 				_nameToClass.put(name, cls);
@@ -429,28 +428,30 @@ public abstract class Reflection {
 			try {
 				return new ReflectConstructor(theClass.getConstructor(argsTypes), signature);
 			}
-			catch(NoSuchMethodException e) {}
-			/**/
-			LogContext.warning("Reflection not supported (Reflection.getConstructor(String)");
-			return null;
+			catch(NoSuchMethodException e) {
+				LogContext.warning("Reflection not supported (Reflection.getConstructor(String)", e);
+				return null;
+			}
 		}
 		@Override
 		public Class[] getInterfaces(Class cls) {
-			/**/
-			if(true)
+			try {
 				return cls.getInterfaces();
-			/**/
-			LogContext.warning("Reflection not supported (Reflection.getInterfaces(Class)");
-			return new Class[0];
+			}
+			catch(Exception e) {
+				LogContext.warning("Reflection not supported (Reflection.getInterfaces(Class)", e);
+				return new Class[0];
+			}
 		}
 		@Override
 		public Class getSuperclass(Class cls) {
-			/**/
-			if(true)
+			try {
 				return cls.getSuperclass();
-			/**/
-			LogContext.warning("Reflection not supported (Reflection.getSuperclass(Class)");
-			return null;
+			}
+			catch(Exception e) {
+				LogContext.warning("Reflection not supported (Reflection.getSuperclass(Class)", e);
+				return null;
+			}
 		}
 		// Implements abstract method.
 		@Override
@@ -475,10 +476,10 @@ public abstract class Reflection {
 					return null;
 				return new ReflectMethod(theClass.getMethod(methodName, argsTypes), signature);
 			}
-			catch(Throwable t) {}
-			/**/
-			LogContext.warning("Reflection not supported (Reflection.getMethod(String)");
-			return null;
+			catch(Throwable t) {
+				LogContext.warning("Reflection not supported (Reflection.getMethod(String)", t);
+				return null;
+			}
 		}
 		@Override
 		public Object getField(Class forClass, Class type, boolean inherited) {
@@ -680,7 +681,7 @@ public abstract class Reflection {
 					return _value.invoke(that, args);
 				}
 				catch(IllegalAccessException e) {
-					throw new IllegalAccessError("Illegal access error for " + _signature + " method");
+					throw new IllegalAccessError("Illegal access error for " + _signature + " method: " + e.getMessage());
 				}
 				catch(java.lang.reflect.InvocationTargetException e) {
 					if(e.getCause() instanceof RuntimeException)

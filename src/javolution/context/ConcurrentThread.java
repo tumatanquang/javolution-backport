@@ -39,7 +39,10 @@ class ConcurrentThread extends RealtimeThread {
 			SET_DAEMON.invoke(this, Boolean.TRUE);
 		}
 	}
-	private synchronized int getCount() {
+	/**
+	 * @since 5.6.4 Change method {@code getCount} to {@code static}
+	 */
+	private synchronized static int getCount() {
 		return _Count++;
 	}
 	private static int _Count;

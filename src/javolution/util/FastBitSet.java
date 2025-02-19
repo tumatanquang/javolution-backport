@@ -12,6 +12,7 @@ import javax.realtime.MemoryArea;
 import javolution.context.ObjectFactory;
 import javolution.lang.MathLib;
 import javolution.lang.Reusable;
+import javolution.util.internal.collection.FastCollection;
 /**
  * <p> This class represents either a table of bits or a set of non-negative
  *     numbers.</p>

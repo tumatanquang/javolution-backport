@@ -124,12 +124,12 @@ public class ClassInitializer {
 	 */
 	public static void initialize(Class cls) {
 		try {
-			/* */
+			try {
 			Class.forName(cls.getName(), true, cls.getClassLoader());
-			if(true)
-				return;
-			/**/
+			}
+			catch(Exception e) {
 			Class.forName(cls.getName()); // J2ME
+			}
 		}
 		catch(ClassNotFoundException e) {
 			LogContext.error(e);

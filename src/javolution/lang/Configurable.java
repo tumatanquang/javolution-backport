@@ -433,11 +433,9 @@ public class Configurable<T> {
 		}
 	}
 	// For J2ME Compatibility.
-	private static java.lang.CharSequence toCsq(Object str) {
-		/**/
-		if(true)
+	private static CharSequence toCsq(Object str) {
+		if(str instanceof CharSequence)
 			return (CharSequence) str;
-		/**/
 		return str == null ? null : Text.valueOf(str);
 	}
 }

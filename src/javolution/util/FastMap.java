@@ -26,7 +26,9 @@ import javolution.lang.MathLib;
 import javolution.lang.Realtime;
 import javolution.lang.Reusable;
 import javolution.text.Text;
-import javolution.util.FastCollection.Record;
+import javolution.util.internal.FastComparator;
+import javolution.util.internal.collection.FastCollection;
+import javolution.util.internal.collection.FastCollection.Record;
 import javolution.xml.XMLSerializable;
 /**
  * <p> This class represents a hash map with real-time behavior;
@@ -945,8 +947,7 @@ public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Real
 			}
 			return sum;
 		}
-		else
-			return _entries.length;
+		return _entries.length;
 	}
 	private int getCapacity() {
 		int capacity = 0;
@@ -1009,8 +1010,7 @@ public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Real
 			}
 			return depth + 1;
 		}
-		else
-			return 0;
+		return 0;
 	}
 	/**
 	 * Returns a {@link FastCollection} view of the values contained in this
@@ -1162,8 +1162,7 @@ public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Real
 					return false;
 				return _valueComparator.areEqual(thisEntry.getValue(), thatEntry.getValue());
 			}
-			else
-				return false;
+			return false;
 		}
 		@Override
 		public Record head() {
@@ -1538,8 +1537,7 @@ public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Real
 				return FastComparator.DEFAULT.areEqual(_key, entry.getKey())
 						&& FastComparator.DEFAULT.areEqual(_value, entry.getValue());
 			}
-			else
-				return false;
+			return false;
 		}
 		/**
 		 * Returns the hash code for this entry.

@@ -10,10 +10,10 @@ package javolution.xml;
 import javolution.lang.Reusable;
 import javolution.text.CharArray;
 import javolution.text.TextBuilder;
-import javolution.util.FastComparator;
 import javolution.util.FastMap;
 import javolution.util.FastTable;
 import javolution.util.Index;
+import javolution.util.internal.FastComparator;
 import javolution.xml.stream.XMLStreamException;
 /**
  * <p> This class represents a resolver for XML cross references during

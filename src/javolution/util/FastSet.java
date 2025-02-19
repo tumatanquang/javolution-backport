@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.Set;
 import javolution.context.ObjectFactory;
 import javolution.lang.Reusable;
+import javolution.util.internal.FastComparator;
+import javolution.util.internal.collection.FastCollection;
 /**
  * <p> This class represents a set collection backed by a {@link FastMap};
  *     smooth capacity increase and no rehashing ever performed.</p>

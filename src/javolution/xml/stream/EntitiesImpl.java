@@ -12,8 +12,8 @@ import java.util.Iterator;
 import java.util.Map;
 import javolution.lang.Reusable;
 import javolution.text.CharArray;
-import javolution.util.FastCollection;
-import javolution.util.FastCollection.Record;
+import javolution.util.internal.collection.FastCollection;
+import javolution.util.internal.collection.FastCollection.Record;
 /**
  * This class holds defined entities while parsing.
  *

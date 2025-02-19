@@ -3,6 +3,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import javolution.context.LocalContext;
+import javolution.util.internal.FastComparator;
+import javolution.util.internal.collection.FastCollection;
 /**
  * <p> This class represents a map which can be temporarily modified without
  *     impacting other threads ({@link LocalContext scoped} changes).</p>

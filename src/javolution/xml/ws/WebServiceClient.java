@@ -66,10 +66,6 @@ public abstract class WebServiceClient {
 	 * Default constructor (address not set).
 	 */
 	public WebServiceClient() {
-		/**/
-		if(true)
-			return;
-		/**/
 		throw new UnsupportedOperationException("J2ME Not Supported Yet");
 	}
 	/**
