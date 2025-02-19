@@ -125,10 +125,10 @@ public class ClassInitializer {
 	public static void initialize(Class cls) {
 		try {
 			try {
-			Class.forName(cls.getName(), true, cls.getClassLoader());
+				Class.forName(cls.getName(), true, cls.getClassLoader());
 			}
 			catch(Exception e) {
-			Class.forName(cls.getName()); // J2ME
+				Class.forName(cls.getName()); // J2ME
 			}
 		}
 		catch(ClassNotFoundException e) {

@@ -216,4 +216,3 @@ public interface Attributes {
 	 */
 	public abstract String getValue(String qName);
 }
-// end of Attributes.java

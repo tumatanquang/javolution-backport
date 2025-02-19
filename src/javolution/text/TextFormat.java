@@ -392,7 +392,6 @@ public abstract class TextFormat<T> {
 		}
 	}
 	private static CharSequence j2meToCharSeq(Object str) {
-		/**/
 		return (CharSequence) str;
 	}
 }

@@ -293,4 +293,3 @@ public class HandlerBase implements EntityResolver, DTDHandler, DocumentHandler,
 		throw e;
 	}
 }
-// end of HandlerBase.java

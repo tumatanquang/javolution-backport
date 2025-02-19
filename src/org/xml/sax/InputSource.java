@@ -279,4 +279,3 @@ public class InputSource {
 	private String encoding;
 	private Reader characterStream;
 }
-// end of InputSource.java

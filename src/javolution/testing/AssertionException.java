@@ -16,6 +16,10 @@ package javolution.testing;
  */
 public class AssertionException extends RuntimeException {
 	/**
+	 *
+	 */
+	private static final long serialVersionUID = 5001062265678002715L;
+	/**
 	 * Creates an assertion exception with no detailed message.
 	 */
 	public AssertionException() {}
@@ -27,5 +31,4 @@ public class AssertionException extends RuntimeException {
 	public AssertionException(String message) {
 		super(message);
 	}
-	private static final long serialVersionUID = 1L;
 }

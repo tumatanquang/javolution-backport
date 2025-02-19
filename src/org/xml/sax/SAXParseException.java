@@ -222,4 +222,3 @@ public class SAXParseException extends SAXException {
 	 */
 	private int columnNumber;
 }
-// end of SAXParseException.java

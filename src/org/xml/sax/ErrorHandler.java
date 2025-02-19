@@ -121,4 +121,3 @@ public interface ErrorHandler {
 	 */
 	public abstract void fatalError(SAXParseException exception) throws SAXException;
 }
-// end of ErrorHandler.java

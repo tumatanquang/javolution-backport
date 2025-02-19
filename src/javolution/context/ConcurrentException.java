@@ -19,6 +19,10 @@ package javolution.context;
  */
 public class ConcurrentException extends RuntimeException {
 	/**
+	 *
+	 */
+	private static final long serialVersionUID = -4745370389820685720L;
+	/**
 	 * Holds the cause.
 	 */
 	private Throwable _cause;
@@ -41,5 +45,4 @@ public class ConcurrentException extends RuntimeException {
 	public Throwable getCause() {
 		return _cause;
 	}
-	private static final long serialVersionUID = 1L;
 }

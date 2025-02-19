@@ -159,4 +159,3 @@ public interface AttributeList {
 	 */
 	public abstract String getValue(String name);
 }
-// end of AttributeList.java

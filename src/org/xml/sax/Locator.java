@@ -119,4 +119,3 @@ public interface Locator {
 	 */
 	public abstract int getColumnNumber();
 }
-// end of Locator.java

@@ -18,7 +18,7 @@ import javolution.text.Cursor;
 import javolution.text.Text;
 import javolution.text.TextFormat;
 import javolution.text.TypeFormat;
-import javolution.util.internal.collection.FastCollection.Record;
+import javolution.util.internal.collection.FastAbstractCollection.Record;
 import javolution.xml.XMLSerializable;
 /**
  * <p> This class represents a <b>unique</b> index which can be used instead of
@@ -46,6 +46,20 @@ import javolution.xml.XMLSerializable;
  * @version 5.1, July 26, 2007
  */
 public final class Index extends Number implements Comparable<Index>, Record, Realtime, Immutable, XMLSerializable {
+	private static final long serialVersionUID = 0x565;
+	/**
+	 * Holds the default text format.
+	 */
+	static final TextFormat TEXT_FORMAT = new TextFormat(Index.class) {
+		@Override
+		public Appendable format(Object obj, Appendable dest) throws IOException {
+			return TypeFormat.format(((Index) obj).intValue(), dest);
+		}
+		@Override
+		public Object parse(CharSequence csq, Cursor cursor) {
+			return Index.valueOf(TypeFormat.parseInt(csq, 10, cursor));
+		}
+	};
 	/**
 	 * Holds the index zero (value <code>0</code>).
 	 */
@@ -303,18 +317,4 @@ public final class Index extends Number implements Comparable<Index>, Record, Re
 	public Text toText() {
 		return TextFormat.getInstance(Index.class).format(this);
 	}
-	/**
-	 * Holds the default text format.
-	 */
-	static final TextFormat TEXT_FORMAT = new TextFormat(Index.class) {
-		@Override
-		public Appendable format(Object obj, Appendable dest) throws IOException {
-			return TypeFormat.format(((Index) obj).intValue(), dest);
-		}
-		@Override
-		public Object parse(CharSequence csq, Cursor cursor) {
-			return Index.valueOf(TypeFormat.parseInt(csq, 10, cursor));
-		}
-	};
-	private static final long serialVersionUID = 1L;
 }

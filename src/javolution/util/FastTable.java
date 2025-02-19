@@ -20,11 +20,9 @@ import javax.realtime.MemoryArea;
 import javolution.context.ObjectFactory;
 import javolution.context.PersistentContext;
 import javolution.lang.MathLib;
-import javolution.lang.Reusable;
 import javolution.util.internal.FastComparator;
-import javolution.util.internal.collection.AbstractCollection;
-import javolution.util.internal.collection.FastCollection;
-import javolution.util.internal.collection.SharedCollectionImpl;
+import javolution.util.internal.collection.FastAbstractCollection;
+import javolution.util.internal.collection.FastAbstractList;
 /**
  * <p> This class represents a random access collection with real-time behavior
  *     (smooth capacity increase).</p>
@@ -37,7 +35,7 @@ import javolution.util.internal.collection.SharedCollectionImpl;
  *          large chunk of memory to allocate (likely to trigger a
  *          full garbage collection due to memory fragmentation).</li>
  *     <li> Support concurrent access/iteration/modification without synchronization
- *          if marked {@link FastCollection#shared shared}. </li>
+ *          if marked {@link FastAbstractCollection#shared shared}. </li>
  *     </ul></p>
  *
  *  <p> Iterations over the {@link FastTable} values are faster when
@@ -48,14 +46,14 @@ import javolution.util.internal.collection.SharedCollectionImpl;
  *     }[/code]</p>
  *
  *  <p> {@link FastTable} supports {@link #sort sorting} in place (quick sort)
- *      using the {@link FastCollection#getValueComparator() value comparator}
+ *      using the {@link FastAbstractCollection#getValueComparator() value comparator}
  *      for the table (no object or array allocation when sorting).</p>
  *
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.4.5, August 20, 2007
  */
-public class FastTable<E> extends AbstractCollection<E> implements List<E>, Reusable, RandomAccess {
-	private static final long serialVersionUID = 0x564;
+public class FastTable<E> extends FastAbstractList<E> implements RandomAccess {
+	private static final long serialVersionUID = 0x565;
 	/**
 	 * Holds the factory for this fast table.
 	 */
@@ -218,7 +216,7 @@ public class FastTable<E> extends AbstractCollection<E> implements List<E>, Reus
 			increaseCapacity();
 		}
 		_high[_size >> B1][_size & M1] = value;
-		_size++;
+		++_size;
 		return true;
 	}
 	/**
@@ -260,7 +258,7 @@ public class FastTable<E> extends AbstractCollection<E> implements List<E>, Reus
 	public E removeLast() {
 		if(_size == 0)
 			throw new NoSuchElementException();
-		_size--; // No need for volatile, removal are not thread-safe.
+		--_size; // No need for volatile, removal are not thread-safe.
 		final E[] low = _high[_size >> B1];
 		final E previous = low[_size & M1];
 		low[_size & M1] = null;
@@ -337,7 +335,7 @@ public class FastTable<E> extends AbstractCollection<E> implements List<E>, Reus
 			throw new IndexOutOfBoundsException("index: " + index);
 		shiftRight(index, 1);
 		_high[index >> B1][index & M1] = value;
-		_size++;
+		++_size;
 	}
 	/**
 	 * Removes the value at the specified position from this table.
@@ -357,7 +355,7 @@ public class FastTable<E> extends AbstractCollection<E> implements List<E>, Reus
 	public E remove(int index) {
 		final E previous = get(index);
 		shiftLeft(index + 1, 1);
-		_size--; // No need for volatile, removal are not thread-safe.
+		--_size; // No need for volatile, removal are not thread-safe.
 		_high[_size >> B1][_size & M1] = null; // Deallocates for GC.
 		return previous;
 	}
@@ -398,7 +396,7 @@ public class FastTable<E> extends AbstractCollection<E> implements List<E>, Reus
 		for(int i = 0; i < _size;) {
 			final E[] low = _high[i >> B1];
 			final int count = MathLib.min(low.length, _size - i);
-			for(int j = 0; j < count; j++) {
+			for(int j = -1; ++j < count;) {
 				if(comp == FastComparator.DEFAULT ? defaultEquals(value, low[j]) : comp.areEqual(value, low[j]))
 					return i + j;
 			}
@@ -437,7 +435,7 @@ public class FastTable<E> extends AbstractCollection<E> implements List<E>, Reus
 	 */
 	@Override
 	public Iterator<E> iterator() {
-		return FastTableIterator.valueOf(this, 0, 0, _size);
+		return listIterator();
 	}
 	/**
 	 * Returns a list iterator over the elements in this list
@@ -519,7 +517,7 @@ public class FastTable<E> extends AbstractCollection<E> implements List<E>, Reus
 	}
 	/**
 	 * Sorts this table in place (quick sort) using this table
-	 * {@link FastCollection#getValueComparator() value comparator}
+	 * {@link FastAbstractCollection#getValueComparator() value comparator}
 	 * (smallest first).
 	 *
 	 * @return <code>this</code>
@@ -612,7 +610,7 @@ public class FastTable<E> extends AbstractCollection<E> implements List<E>, Reus
 	// Overrides  to return a list (JDK1.5+).
 	@Override
 	public FastTable<E> shared() {
-		return new FastTable<E>(new SharedCollectionImpl<E>(this));
+		return new FastTable<E>(super.shared());
 	}
 	// Overrides (optimization).
 	@Override
@@ -889,7 +887,7 @@ public class FastTable<E> extends AbstractCollection<E> implements List<E>, Reus
 	/**
 	* This inner class implements a sub-table.
 	*/
-	private static final class SubTable extends FastCollection implements List, RandomAccess {
+	private static final class SubTable extends FastAbstractCollection implements List, RandomAccess {
 		private static final long serialVersionUID = 0x564;
 		private static final ObjectFactory FACTORY = new ObjectFactory() {
 			@Override
@@ -1043,7 +1041,7 @@ public class FastTable<E> extends AbstractCollection<E> implements List<E>, Reus
 		}
 		public void add(Object o) {
 			_table.add(_nextIndex++, o);
-			_end++;
+			++_end;
 			_currentIndex = -1;
 		}
 		public void set(Object o) {
@@ -1056,9 +1054,9 @@ public class FastTable<E> extends AbstractCollection<E> implements List<E>, Reus
 		public void remove() {
 			if(_currentIndex >= 0) {
 				_table.remove(_currentIndex);
-				_end--;
+				--_end;
 				if(_currentIndex < _nextIndex) {
-					_nextIndex--;
+					--_nextIndex;
 				}
 				_currentIndex = -1;
 			}

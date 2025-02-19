@@ -6,7 +6,7 @@
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
-package javolution.util;
+package javolution.util.internal.collection;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -17,6 +17,7 @@ import java.util.ListIterator;
 import java.util.Set;
 import javolution.lang.Realtime;
 import javolution.text.Text;
+import javolution.util.internal.FastComparator;
 import javolution.xml.XMLSerializable;
 /**
  * <p> This class represents collections which can quickly be iterated over
@@ -49,7 +50,7 @@ import javolution.xml.XMLSerializable;
  *             }
  *         }[/code]</p>
  *
- * <p> Users may provide a read-only view of any {@link FastCollection}
+ * <p> Users may provide a read-only view of any {@link FastAbstractCollection}
  *     instance using the {@link #unmodifiable()} method (the view is
  *     thread-safe if the collection is {@link #shared shared}).
  *     [code]
@@ -63,19 +64,19 @@ import javolution.xml.XMLSerializable;
  *             }
  *         }[/code]</p>
  *
- * <p> Finally, {@link FastCollection} may use custom {@link #getValueComparator
+ * <p> Finally, {@link FastAbstractCollection} may use custom {@link #getValueComparator
  *     comparators} for element equality or ordering if the collection is
  *     ordered (e.g. <code>FastTree</code>).
  *
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.4.5, March 23, 2010
  */
-public abstract class FastCollection<E> implements Collection<E>, XMLSerializable, Realtime {
-	private static final long serialVersionUID = -5829535107543118923L;
+public abstract class FastAbstractCollection<E> implements Collection<E>, Iterable<E>, XMLSerializable, Realtime {
+	private static final long serialVersionUID = 0x565;
 	/**
 	 * Default constructor.
 	 */
-	protected FastCollection() {}
+	protected FastAbstractCollection() {}
 	/**
 	 * Returns the number of values in this collection.
 	 *
@@ -139,7 +140,7 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 	 * @return a thread-safe collection.
 	 */
 	public Collection<E> shared() {
-		return new Shared();
+		return new Shared(this);
 	}
 	/**
 	 * Returns an iterator over the elements in this collection
@@ -278,7 +279,7 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 		// Iterates from the tail and remove the record if present in c.
 		for(Record head = head(), r = tail().getPrevious(), previous; r != head; r = previous) {
 			previous = r.getPrevious(); // Saves previous.
-			if(FastCollection.contains(c, valueOf(r), this.getValueComparator())) {
+			if(FastAbstractCollection.contains(c, valueOf(r), this.getValueComparator())) {
 				delete(r);
 				modified = true;
 			}
@@ -286,7 +287,7 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 		return modified;
 	}
 	private static boolean contains(Collection c, Object obj, FastComparator cmp) {
-		if(c instanceof FastCollection && ((FastCollection) c).getValueComparator().equals(cmp))
+		if(c instanceof FastAbstractCollection && ((FastAbstractCollection) c).getValueComparator().equals(cmp))
 			return c.contains(obj); // Direct is ok (same value comparator).
 		Iterator<?> itr = c.iterator();
 		while(itr.hasNext()) {
@@ -308,7 +309,7 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 		// Iterates from the tail and remove the record if not present in c.
 		for(Record head = head(), r = tail().getPrevious(), previous; r != head; r = previous) {
 			previous = r.getPrevious(); // Saves previous.
-			if(!FastCollection.contains(c, valueOf(r), this.getValueComparator())) {
+			if(!FastAbstractCollection.contains(c, valueOf(r), this.getValueComparator())) {
 				delete(r);
 				modified = true;
 			}
@@ -372,7 +373,7 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 	}
 	/**
 	 * Returns the <code>String</code> representation of this
-	 * {@link FastCollection}.
+	 * {@link FastAbstractCollection}.
 	 *
 	 * @return <code>toText().toString()</code>
 	 */
@@ -466,42 +467,42 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 	/**
 	 * This inner class represents an unmodifiable view over the collection.
 	 */
-	private class Unmodifiable extends FastCollection implements List, Set {
-		private static final long serialVersionUID = -1166978390107744325L;
+	private final class Unmodifiable extends FastAbstractCollection implements List, Set {
+		private static final long serialVersionUID = 0x564;
 		// Implements abstract method.
 		@Override
 		public int size() {
-			return FastCollection.this.size();
+			return FastAbstractCollection.this.size();
 		}
 		// Implements abstract method.
 		@Override
 		public Record head() {
-			return FastCollection.this.head();
+			return FastAbstractCollection.this.head();
 		}
 		// Implements abstract method.
 		@Override
 		public Record tail() {
-			return FastCollection.this.tail();
+			return FastAbstractCollection.this.tail();
 		}
 		// Implements abstract method.
 		@Override
 		public Object valueOf(Record record) {
-			return FastCollection.this.valueOf(record);
+			return FastAbstractCollection.this.valueOf(record);
 		}
 		// Forwards...
 		@Override
 		public boolean contains(Object value) {
-			return FastCollection.this.contains(value);
+			return FastAbstractCollection.this.contains(value);
 		}
 		// Forwards...
 		@Override
 		public boolean containsAll(Collection c) {
-			return FastCollection.this.containsAll(c);
+			return FastAbstractCollection.this.containsAll(c);
 		}
 		// Forwards...
 		@Override
 		public FastComparator getValueComparator() {
-			return FastCollection.this.getValueComparator();
+			return FastAbstractCollection.this.getValueComparator();
 		}
 		// Disallows...
 		@Override
@@ -520,7 +521,7 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 			throw new UnsupportedOperationException("Unmodifiable");
 		}
 		public Object get(int index) {
-			return ((List) FastCollection.this).get(index);
+			return ((List) FastAbstractCollection.this).get(index);
 		}
 		public Object set(int index, Object element) {
 			throw new UnsupportedOperationException("Unmodifiable");
@@ -532,10 +533,10 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 			throw new UnsupportedOperationException("Unmodifiable");
 		}
 		public int indexOf(Object o) {
-			return ((List) FastCollection.this).indexOf(o);
+			return ((List) FastAbstractCollection.this).indexOf(o);
 		}
 		public int lastIndexOf(Object o) {
-			return ((List) FastCollection.this).lastIndexOf(o);
+			return ((List) FastAbstractCollection.this).lastIndexOf(o);
 		}
 		public ListIterator listIterator() {
 			throw new UnsupportedOperationException("List iterator not supported for unmodifiable collection");
@@ -551,55 +552,92 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 	 * This inner class represents a thread safe view (read-write) over the
 	 * collection.
 	 */
-	private class Shared implements Collection, Serializable {
-		private static final long serialVersionUID = -3501671857535959375L;
-		public synchronized int size() {
-			return FastCollection.this.size();
+	private static final Object NULL = new Object();
+	private final class Shared implements Collection, Serializable {
+		private static final long serialVersionUID = 0x564;
+		private final FastAbstractCollection<E> fc; // Backing FastCollection
+		private final Object mutex; // Object on which to synchronize
+		private Shared(FastAbstractCollection<E> target) {
+			if(target == null)
+				throw new NullPointerException();
+			fc = target;
+			mutex = this;
 		}
-		public synchronized boolean isEmpty() {
-			return FastCollection.this.isEmpty();
+		public int size() {
+			synchronized(mutex) {
+				return fc.size();
+			}
 		}
-		public synchronized boolean contains(Object o) {
-			return FastCollection.this.contains(o);
+		public boolean isEmpty() {
+			return fc.isEmpty();
 		}
-		public synchronized Object[] toArray() {
-			return FastCollection.this.toArray();
+		public boolean contains(Object o) {
+			synchronized(mutex) {
+				return fc.contains(o);
+			}
 		}
-		public synchronized Object[] toArray(Object[] a) {
-			return FastCollection.this.toArray(a);
+		public Object[] toArray() {
+			synchronized(mutex) {
+				return fc.toArray();
+			}
 		}
-		public synchronized Iterator iterator() {
-			if(FastCollection.this instanceof List)
-				return new ListArrayIterator(FastCollection.this.toArray());
-			return new CollectionArrayIterator(FastCollection.this.toArray());
+		public Object[] toArray(Object[] a) {
+			synchronized(mutex) {
+				return fc.toArray(a);
+			}
 		}
-		public synchronized boolean add(Object e) {
-			return ((FastCollection) FastCollection.this).add(e);
+		public Iterator iterator() {
+			synchronized(mutex) {
+				if(fc instanceof List)
+					return new ListArrayIterator(fc.toArray());
+				return new CollectionArrayIterator(fc.toArray());
+			}
 		}
-		public synchronized boolean remove(Object o) {
-			return FastCollection.this.remove(o);
+		public boolean add(Object e) {
+			synchronized(mutex) {
+				return ((FastAbstractCollection) fc).add(e);
+			}
 		}
-		public synchronized boolean containsAll(Collection c) {
-			return FastCollection.this.containsAll(c);
+		public boolean remove(Object o) {
+			synchronized(mutex) {
+				return fc.remove(o);
+			}
 		}
-		public synchronized boolean addAll(Collection c) {
-			return FastCollection.this.addAll(c);
+		public boolean containsAll(Collection c) {
+			synchronized(mutex) {
+				return fc.containsAll(c);
+			}
 		}
-		public synchronized boolean removeAll(Collection c) {
-			return FastCollection.this.removeAll(c);
+		public boolean addAll(Collection c) {
+			synchronized(mutex) {
+				return fc.addAll(c);
+			}
 		}
-		public synchronized boolean retainAll(Collection c) {
-			return FastCollection.this.retainAll(c);
+		public boolean removeAll(Collection c) {
+			synchronized(mutex) {
+				return fc.removeAll(c);
+			}
 		}
-		public synchronized void clear() {
-			FastCollection.this.clear();
+		public boolean retainAll(Collection c) {
+			synchronized(mutex) {
+				return fc.retainAll(c);
+			}
+		}
+		public void clear() {
+			synchronized(mutex) {
+				fc.clear();
+			}
 		}
 		@Override
-		public synchronized String toString() {
-			return FastCollection.this.toString();
+		public String toString() {
+			synchronized(mutex) {
+				return fc.toString();
+			}
 		}
-		private synchronized void writeObject(ObjectOutputStream s) throws IOException {
-			s.defaultWriteObject();
+		private void writeObject(ObjectOutputStream s) throws IOException {
+			synchronized(mutex) {
+				s.defaultWriteObject();
+			}
 		}
 		private class ListArrayIterator implements Iterator {
 			private final Object[] _elements;
@@ -622,8 +660,8 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 					throw new java.lang.IllegalStateException();
 				_elements[_index - 1] = NULL;
 				_removed++;
-				synchronized(FastCollection.Shared.this) {
-					((List) FastCollection.this).remove(_index - _removed);
+				synchronized(mutex) {
+					((List) fc).remove(_index - _removed);
 				}
 			}
 		}
@@ -643,10 +681,9 @@ public abstract class FastCollection<E> implements Collection<E>, XMLSerializabl
 			public void remove() {
 				if(_next == null)
 					throw new java.lang.IllegalStateException();
-				FastCollection.Shared.this.remove(_next);
+				fc.remove(_next);
 				_next = null;
 			}
 		}
 	}
-	private static final Object NULL = new Object();
 }

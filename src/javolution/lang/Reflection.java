@@ -681,7 +681,8 @@ public abstract class Reflection {
 					return _value.invoke(that, args);
 				}
 				catch(IllegalAccessException e) {
-					throw new IllegalAccessError("Illegal access error for " + _signature + " method: " + e.getMessage());
+					throw new IllegalAccessError(
+							"Illegal access error for " + _signature + " method: " + e.getMessage());
 				}
 				catch(java.lang.reflect.InvocationTargetException e) {
 					if(e.getCause() instanceof RuntimeException)

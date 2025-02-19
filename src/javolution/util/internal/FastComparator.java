@@ -4,7 +4,7 @@ import java.util.Comparator;
 import javolution.lang.Configurable;
 import javolution.text.Text;
 import javolution.util.FastMap;
-import javolution.util.internal.collection.FastCollection;
+import javolution.util.internal.collection.FastAbstractCollection;
 import javolution.xml.XMLSerializable;
 /**
  * <p> This class represents a comparator to be used for equality as well as
@@ -15,7 +15,7 @@ import javolution.xml.XMLSerializable;
  *
  * <p> {@link FastComparator} can be employed with {@link FastMap} (e.g. custom
  *     key comparators for identity maps, value retrieval using keys of a
- *     different class that the map keys) or with {@link FastCollection}
+ *     different class that the map keys) or with {@link FastAbstractCollection}
  *     classes.</p>
  *
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>

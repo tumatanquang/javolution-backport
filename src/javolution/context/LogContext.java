@@ -520,7 +520,7 @@ public abstract class LogContext extends Context {
 		java.io.Console console = System.console();
 		writer = console != null ? console.writer() : null;
 		}
-
+		
 		@Override
 		protected void logMessage(String category, CharSequence message) {
 		if (writer == null) {

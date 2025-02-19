@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import javolution.context.ObjectFactory;
 import javolution.context.StackContext;
-import javolution.util.internal.collection.FastCollection.Record;
+import javolution.util.internal.collection.FastAbstractCollection.Record;
 /**
  * <p> This class represents an iterator over a {@link Fastcollection).
  *     Iterations are thread-safe if the collections records are not removed
@@ -38,11 +38,11 @@ final class FastIterator implements Iterator {
 			iterator._tail = null;
 		}
 	};
-	private FastCollection _collection;
+	private FastAbstractCollection _collection;
 	private Record _current;
 	private Record _next;
 	private Record _tail;
-	public static FastIterator valueOf(FastCollection collection) {
+	public static FastIterator valueOf(FastAbstractCollection collection) {
 		FastIterator iterator = (FastIterator) FastIterator.FACTORY.object();
 		iterator._collection = collection;
 		iterator._next = collection.head().getNext();

@@ -15,12 +15,12 @@ import java.util.Set;
 import javolution.context.ObjectFactory;
 import javolution.lang.Reusable;
 import javolution.util.internal.FastComparator;
-import javolution.util.internal.collection.FastCollection;
+import javolution.util.internal.collection.FastAbstractCollection;
 /**
  * <p> This class represents a set collection backed by a {@link FastMap};
  *     smooth capacity increase and no rehashing ever performed.</p>
  *
- * <p> {@link FastSet}, as for any {@link FastCollection} sub-class, supports
+ * <p> {@link FastSet}, as for any {@link FastAbstractCollection} sub-class, supports
  *     thread-safe fast iterations without using iterators. For example:[code]
  *     for (FastSet.Record r = set.head(), end = set.tail(); (r = r.getNext()) != end;) {
  *         Object value = set.valueOf(r);
@@ -29,7 +29,8 @@ import javolution.util.internal.collection.FastCollection;
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 4.2, December 18, 2006
  */
-public class FastSet<E> extends FastCollection<E> implements Set<E>, Reusable {
+public class FastSet<E> extends FastAbstractCollection<E> implements Set<E>, Reusable {
+	private static final long serialVersionUID = 0x565;
 	/**
 	 * Holds the set factory.
 	 */
@@ -216,5 +217,4 @@ public class FastSet<E> extends FastCollection<E> implements Set<E>, Reusable {
 	public final void delete(Record record) {
 		_map.remove(((FastMap.Entry) record).getKey());
 	}
-	private static final long serialVersionUID = 1L;
 }

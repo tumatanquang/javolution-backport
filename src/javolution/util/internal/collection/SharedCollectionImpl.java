@@ -15,11 +15,11 @@ import javolution.util.internal.ReadWriteLockImpl;
 /**
  * A shared view over a collection (reads-write locks).
  */
-public final class SharedCollectionImpl<E> extends AbstractCollection<E> {
-	private static final long serialVersionUID = 0x564;
-	private final AbstractCollection<E> fc;
+public final class SharedCollectionImpl<E> extends FastAbstractList<E> {
+	private static final long serialVersionUID = 0x565;
+	private final FastAbstractList<E> fc;
 	private final ReadWriteLockImpl lock;
-	public SharedCollectionImpl(AbstractCollection<E> inner) {
+	public SharedCollectionImpl(FastAbstractList<E> inner) {
 		fc = inner;
 		lock = new ReadWriteLockImpl();
 	}
@@ -190,6 +190,15 @@ public final class SharedCollectionImpl<E> extends AbstractCollection<E> {
 		lock.writeLock.lock();
 		try {
 			return fc.removeAll(that);
+		}
+		finally {
+			lock.writeLock.unlock();
+		}
+	}
+	public void reset() {
+		lock.writeLock.lock();
+		try {
+			fc.reset();
 		}
 		finally {
 			lock.writeLock.unlock();

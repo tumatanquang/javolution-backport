@@ -118,4 +118,3 @@ public class SAXException extends Exception {
 	 */
 	private Exception exception;
 }
-// end of SAXException.java

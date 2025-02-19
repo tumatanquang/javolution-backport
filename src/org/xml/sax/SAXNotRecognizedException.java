@@ -39,4 +39,3 @@ public class SAXNotRecognizedException extends SAXException {
 		super(message);
 	}
 }
-// end of SAXNotRecognizedException.java

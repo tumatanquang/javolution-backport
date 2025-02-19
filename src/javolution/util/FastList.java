@@ -21,9 +21,8 @@ import javolution.context.ObjectFactory;
 import javolution.context.PersistentContext;
 import javolution.lang.Reusable;
 import javolution.util.internal.FastComparator;
-import javolution.util.internal.collection.AbstractCollection;
-import javolution.util.internal.collection.FastCollection;
-import javolution.util.internal.collection.SharedCollectionImpl;
+import javolution.util.internal.collection.FastAbstractCollection;
+import javolution.util.internal.collection.FastAbstractList;
 /**
  * <p> This class represents a linked list with real-time behavior;
  *     smooth capacity increase and no memory allocation as long as the
@@ -37,7 +36,7 @@ import javolution.util.internal.collection.SharedCollectionImpl;
  *     Random access operations can be significantly accelerated by
  *     {@link #subList splitting} the list into smaller ones.</p>
  *
- * <p> {@link FastList} (as for any {@link FastCollection} sub-class) supports
+ * <p> {@link FastList} (as for any {@link FastAbstractCollection} sub-class) supports
  *     fast iterations without using iterators.[code]
  *     FastList<String> list = new FastList<String>();
  *     for (FastList.Node<String> n = list.head(), end = list.tail(); (n = n.getNext()) != end;) {
@@ -55,8 +54,8 @@ import javolution.util.internal.collection.SharedCollectionImpl;
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 4.2, December 18, 2006
  */
-public class FastList<E> extends AbstractCollection<E> implements List<E>, Reusable {
-	private static final long serialVersionUID = 0x564;
+public class FastList<E> extends FastAbstractList<E> {
+	private static final long serialVersionUID = 0x565;
 	/**
 	 * Holds the main list factory.
 	 */
@@ -271,7 +270,7 @@ public class FastList<E> extends AbstractCollection<E> implements List<E>, Reusa
 	public int indexOf(Object value) {
 		final FastComparator comp = this.getValueComparator();
 		int index = 0;
-		for(Node n = _head, end = _tail; (n = n._next) != end; index++) {
+		for(Node n = _head, end = _tail; (n = n._next) != end; ++index) {
 			if(comp == FastComparator.DEFAULT ? defaultEquals(value, n._value) : comp.areEqual(value, n._value))
 				return index;
 		}
@@ -289,7 +288,7 @@ public class FastList<E> extends AbstractCollection<E> implements List<E>, Reusa
 	public int lastIndexOf(Object value) {
 		final FastComparator comp = this.getValueComparator();
 		int index = size() - 1;
-		for(Node n = _tail, end = _head; (n = n._previous) != end; index--) {
+		for(Node n = _tail, end = _head; (n = n._previous) != end; --index) {
 			if(comp == FastComparator.DEFAULT ? defaultEquals(value, n._value) : comp.areEqual(value, n._value))
 				return index;
 		}
@@ -446,7 +445,7 @@ public class FastList<E> extends AbstractCollection<E> implements List<E>, Reusa
 	public E removeLast() {
 		if(_size == 0)
 			throw new NoSuchElementException();
-		_size--;
+		--_size;
 		final Node<E> last = _tail._previous;
 		final E previousValue = last._value;
 		_tail = last;
@@ -479,7 +478,7 @@ public class FastList<E> extends AbstractCollection<E> implements List<E>, Reusa
 		newNode._next = next;
 		newNode._previous = previous;
 		newNode._value = value;
-		_size++;
+		++_size;
 	}
 	/**
 	 * Returns the node at the specified index. This method returns
@@ -579,7 +578,7 @@ public class FastList<E> extends AbstractCollection<E> implements List<E>, Reusa
 	// Overrides  to return a list (JDK1.5+).
 	@Override
 	public FastList<E> shared() {
-		return new FastList<E>(new SharedCollectionImpl<E>(this));
+		return new FastList<E>(super.shared());
 	}
 	/**
 	 * Returns a new node for this list; this method can be overriden by
@@ -886,7 +885,7 @@ public class FastList<E> extends AbstractCollection<E> implements List<E>, Reusa
 	/**
 	 * This inner class implements a sub-list.
 	 */
-	private static final class SubList extends FastCollection implements List, Serializable {
+	private static final class SubList extends FastAbstractCollection implements List, Serializable {
 		private static final long serialVersionUID = 0x564;
 		private static final ObjectFactory FACTORY = new ObjectFactory() {
 			@Override

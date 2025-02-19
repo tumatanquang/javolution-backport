@@ -12,7 +12,7 @@ import javax.realtime.MemoryArea;
 import javolution.context.ObjectFactory;
 import javolution.lang.MathLib;
 import javolution.lang.Reusable;
-import javolution.util.internal.collection.FastCollection;
+import javolution.util.internal.collection.FastAbstractCollection;
 /**
  * <p> This class represents either a table of bits or a set of non-negative
  *     numbers.</p>
@@ -25,7 +25,8 @@ import javolution.util.internal.collection.FastCollection;
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.3, February 24, 2008
  */
-public class FastBitSet extends FastCollection<Index> implements Set<Index>, Reusable {
+public class FastBitSet extends FastAbstractCollection<Index> implements Set<Index>, Reusable {
+	private static final long serialVersionUID = 0x565;
 	/**
 	 * Holds the set factory.
 	 */
@@ -553,5 +554,4 @@ public class FastBitSet extends FastCollection<Index> implements Set<Index>, Reu
 		}
 		_length = newLength;
 	}
-	private static final long serialVersionUID = 1L;
 }

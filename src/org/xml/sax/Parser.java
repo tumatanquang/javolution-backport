@@ -161,4 +161,3 @@ public interface Parser {
 	 */
 	public abstract void parse(String systemId) throws SAXException, IOException;
 }
-// end of Parser.java

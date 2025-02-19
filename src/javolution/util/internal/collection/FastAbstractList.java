@@ -2,8 +2,13 @@ package javolution.util.internal.collection;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
-public abstract class AbstractCollection<E> extends FastCollection<E> implements List<E> {
-	private static final long serialVersionUID = 0x564;
+import javolution.lang.Reusable;
+public abstract class FastAbstractList<E> extends FastAbstractCollection<E> implements List<E>, Reusable {
+	private static final long serialVersionUID = 0x565;
+	@Override
+	public FastAbstractList<E> shared() {
+		return new SharedCollectionImpl<E>(this);
+	}
 	public abstract void add(int index, E element);
 	public abstract boolean addAll(int index, Collection<? extends E> c);
 	public abstract E get(int index);
@@ -14,14 +19,4 @@ public abstract class AbstractCollection<E> extends FastCollection<E> implements
 	public abstract E remove(int index);
 	public abstract E set(int index, E element);
 	public abstract List<E> subList(int fromIndex, int toIndex);
-	@Override
-	public abstract int size();
-	@Override
-	public abstract Record head();
-	@Override
-	public abstract Record tail();
-	@Override
-	public abstract E valueOf(Record record);
-	@Override
-	public abstract void delete(Record record);
 }

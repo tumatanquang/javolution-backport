@@ -103,4 +103,3 @@ public interface EntityResolver {
 	 */
 	public abstract InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException;
 }
-// end of EntityResolver.java

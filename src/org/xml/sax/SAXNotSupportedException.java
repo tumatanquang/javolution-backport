@@ -40,4 +40,3 @@ public class SAXNotSupportedException extends SAXException {
 		super(message);
 	}
 }
-// end of SAXNotSupportedException.java

@@ -51,4 +51,3 @@ public interface XMLFilter extends XMLReader {
 	 */
 	public abstract XMLReader getParent();
 }
-// end of XMLFilter.java
