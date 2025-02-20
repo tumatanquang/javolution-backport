@@ -26,9 +26,8 @@ import javolution.lang.MathLib;
 import javolution.lang.Realtime;
 import javolution.lang.Reusable;
 import javolution.text.Text;
+import javolution.util.FastCollection.Record;
 import javolution.util.internal.FastComparator;
-import javolution.util.internal.collection.FastAbstractCollection;
-import javolution.util.internal.collection.FastAbstractCollection.Record;
 import javolution.xml.XMLSerializable;
 /**
  * <p> This class represents a hash map with real-time behavior;
@@ -128,7 +127,7 @@ import javolution.xml.XMLSerializable;
  * @version 5.2, September 11, 2007
  */
 public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Realtime {
-	private static final long serialVersionUID = 0x565;
+	private static final long serialVersionUID = -4246538256330088066L;
 	// We do a full resize (and rehash) only when the capacity is less than C1.
 	// For large maps we dispatch to sub-maps.
 	private static final int B0 = 4; // Initial capacity in bits.
@@ -1016,7 +1015,7 @@ public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Real
 		return 0;
 	}
 	/**
-	 * Returns a {@link FastAbstractCollection} view of the values contained in this
+	 * Returns a {@link FastCollection} view of the values contained in this
 	 * map. The collection is backed by the map, so changes to the
 	 * map are reflected in the collection, and vice-versa. The collection
 	 * supports element removal, which removes the corresponding mapping from
@@ -1027,7 +1026,7 @@ public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Real
 	 * operations.
 	 *
 	 * @return a collection view of the values contained in this map
-	 *         (instance of {@link FastAbstractCollection}).
+	 *         (instance of {@link FastCollection}).
 	 */
 	public final Collection<V> values() {
 		if(_values == null) {
@@ -1039,7 +1038,7 @@ public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Real
 		}
 		return _values;
 	}
-	private final class Values extends FastAbstractCollection {
+	private final class Values extends FastCollection {
 		private static final long serialVersionUID = 8905800965110547381L;
 		@Override
 		public int size() {
@@ -1123,7 +1122,7 @@ public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Real
 		}
 	}
 	/**
-	 * Returns a {@link FastAbstractCollection} view of the mappings contained in this
+	 * Returns a {@link FastCollection} view of the mappings contained in this
 	 * map. Each element in the returned collection is a
 	 * <code>FastMap.Entry</code>. The collection is backed by the map, so
 	 * changes to the map are reflected in the collection, and vice-versa. The
@@ -1134,7 +1133,7 @@ public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Real
 	 * not support the <code>add</code> or <code>addAll</code> operations.
 	 *
 	 * @return a collection view of the mappings contained in this map
-	 *         (instance of {@link FastAbstractCollection}).
+	 *         (instance of {@link FastCollection}).
 	 */
 	public final Set<Map.Entry<K, V>> entrySet() {
 		if(_entrySet == null) {
@@ -1146,7 +1145,7 @@ public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Real
 		}
 		return _entrySet;
 	}
-	private final class EntrySet extends FastAbstractCollection implements Set {
+	private final class EntrySet extends FastCollection implements Set {
 		private static final long serialVersionUID = 3722841650950653372L;
 		@Override
 		public int size() {
@@ -1263,7 +1262,7 @@ public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Real
 		}
 	}
 	/**
-	 * Returns a {@link FastAbstractCollection} view of the keys contained in this
+	 * Returns a {@link FastCollection} view of the keys contained in this
 	 * map. The set is backed by the map, so changes to the map are reflected
 	 * in the set, and vice-versa. The set supports element removal, which
 	 * removes the corresponding mapping from this map, via the
@@ -1273,7 +1272,7 @@ public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Real
 	 * not support the <code>add</code> or <code>addAll</code> operations.
 	 *
 	 * @return a set view of the keys contained in this map
-	 *         (instance of {@link FastAbstractCollection}).
+	 *         (instance of {@link FastCollection}).
 	 */
 	public final Set<K> keySet() {
 		if(_keySet == null) {
@@ -1285,7 +1284,7 @@ public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Real
 		}
 		return _keySet;
 	}
-	private final class KeySet extends FastAbstractCollection implements Set {
+	private final class KeySet extends FastCollection implements Set {
 		private static final long serialVersionUID = -522975597792555676L;
 		@Override
 		public int size() {
@@ -1381,7 +1380,7 @@ public class FastMap<K, V> implements Map<K, V>, Reusable, XMLSerializable, Real
 	 * Attempts to modify the returned map or to directly access its
 	 * (modifiable) map entries (e.g. <code>unmodifiable().entrySet()</code>)
 	 * result in an {@link UnsupportedOperationException} being thrown.
-	 * Unmodifiable {@link FastAbstractCollection} views of this map keys and values
+	 * Unmodifiable {@link FastCollection} views of this map keys and values
 	 * are nonetheless obtainable (e.g. <code>unmodifiable().keySet(),
 	 * <code>unmodifiable().values()</code>).
 	 *

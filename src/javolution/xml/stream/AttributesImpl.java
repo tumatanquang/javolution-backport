@@ -77,7 +77,7 @@ final class AttributesImpl implements Attributes, Reusable {
 	public int getIndex(CharSequence uri, CharSequence localName) {
 		if(uri == null)
 			throw new IllegalArgumentException("null namespace URI is not allowed");
-		for(int i = 0; i < _length; i++) {
+		for(int i = 0; i < _length; ++i) {
 			if(_localNames[i].equals(localName)) {
 				CharArray ns = _namespaces.getNamespaceURINullAllowed(_prefixes[i]);
 				if(ns != null && ns.equals(uri))
@@ -88,7 +88,7 @@ final class AttributesImpl implements Attributes, Reusable {
 	}
 	// Implements Attributes.
 	public int getIndex(CharSequence qName) {
-		for(int i = 0; i < _length; i++) {
+		for(int i = 0; i < _length; ++i) {
 			if(_qNames[i].equals(qName))
 				return i;
 		}
@@ -158,7 +158,7 @@ final class AttributesImpl implements Attributes, Reusable {
 	private void increaseCapacity() {
 		MemoryArea.getMemoryArea(this).executeInArea(new Runnable() {
 			public void run() {
-				final int newCapacity = _length * 2;
+				final int newCapacity = _length << 1;
 				CharArray[] tmp = new CharArray[newCapacity];
 				System.arraycopy(_localNames, 0, tmp, 0, _length);
 				_localNames = tmp;

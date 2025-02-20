@@ -6,7 +6,7 @@
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
-package javolution.util.internal.collection;
+package javolution.util;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -50,7 +50,7 @@ import javolution.xml.XMLSerializable;
  *             }
  *         }[/code]</p>
  *
- * <p> Users may provide a read-only view of any {@link FastAbstractCollection}
+ * <p> Users may provide a read-only view of any {@link FastCollection}
  *     instance using the {@link #unmodifiable()} method (the view is
  *     thread-safe if the collection is {@link #shared shared}).
  *     [code]
@@ -64,19 +64,19 @@ import javolution.xml.XMLSerializable;
  *             }
  *         }[/code]</p>
  *
- * <p> Finally, {@link FastAbstractCollection} may use custom {@link #getValueComparator
+ * <p> Finally, {@link FastCollection} may use custom {@link #getValueComparator
  *     comparators} for element equality or ordering if the collection is
  *     ordered (e.g. <code>FastTree</code>).
  *
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.4.5, March 23, 2010
  */
-public abstract class FastAbstractCollection<E> implements Collection<E>, Iterable<E>, XMLSerializable, Realtime {
-	private static final long serialVersionUID = 0x565;
+public abstract class FastCollection<E> implements Collection<E>, Iterable<E>, XMLSerializable, Realtime {
+	private static final long serialVersionUID = 4766294467168709155L;
 	/**
 	 * Default constructor.
 	 */
-	protected FastAbstractCollection() {}
+	protected FastCollection() {}
 	/**
 	 * Returns the number of values in this collection.
 	 *
@@ -243,7 +243,7 @@ public abstract class FastAbstractCollection<E> implements Collection<E>, Iterab
 	 */
 	public boolean addAll(Collection<? extends E> c) {
 		boolean modified = false;
-		for(Iterator<? extends E> itr = c.iterator(); itr.hasNext();) {
+		for(final Iterator<? extends E> itr = c.iterator(); itr.hasNext();) {
 			if(add(itr.next())) {
 				modified = true;
 			}
@@ -259,7 +259,7 @@ public abstract class FastAbstractCollection<E> implements Collection<E>, Iterab
 	 *         of the specified collection; <code>false</code> otherwise.
 	 */
 	public boolean containsAll(Collection<?> c) {
-		for(Iterator<?> itr = c.iterator(); itr.hasNext();) {
+		for(final Iterator<?> itr = c.iterator(); itr.hasNext();) {
 			if(!contains(itr.next()))
 				return false;
 		}
@@ -279,7 +279,7 @@ public abstract class FastAbstractCollection<E> implements Collection<E>, Iterab
 		// Iterates from the tail and remove the record if present in c.
 		for(Record head = head(), r = tail().getPrevious(), previous; r != head; r = previous) {
 			previous = r.getPrevious(); // Saves previous.
-			if(FastAbstractCollection.contains(c, valueOf(r), this.getValueComparator())) {
+			if(FastCollection.contains(c, valueOf(r), this.getValueComparator())) {
 				delete(r);
 				modified = true;
 			}
@@ -287,10 +287,9 @@ public abstract class FastAbstractCollection<E> implements Collection<E>, Iterab
 		return modified;
 	}
 	private static boolean contains(Collection c, Object obj, FastComparator cmp) {
-		if(c instanceof FastAbstractCollection && ((FastAbstractCollection) c).getValueComparator().equals(cmp))
+		if(c instanceof FastCollection && ((FastCollection) c).getValueComparator().equals(cmp))
 			return c.contains(obj); // Direct is ok (same value comparator).
-		Iterator<?> itr = c.iterator();
-		while(itr.hasNext()) {
+		for(final Iterator<?> itr = c.iterator(); itr.hasNext();) {
 			if(cmp.areEqual(obj, itr.next()))
 				return true;
 		}
@@ -309,7 +308,7 @@ public abstract class FastAbstractCollection<E> implements Collection<E>, Iterab
 		// Iterates from the tail and remove the record if not present in c.
 		for(Record head = head(), r = tail().getPrevious(), previous; r != head; r = previous) {
 			previous = r.getPrevious(); // Saves previous.
-			if(!FastAbstractCollection.contains(c, valueOf(r), this.getValueComparator())) {
+			if(!FastCollection.contains(c, valueOf(r), this.getValueComparator())) {
 				delete(r);
 				modified = true;
 			}
@@ -373,7 +372,7 @@ public abstract class FastAbstractCollection<E> implements Collection<E>, Iterab
 	}
 	/**
 	 * Returns the <code>String</code> representation of this
-	 * {@link FastAbstractCollection}.
+	 * {@link FastCollection}.
 	 *
 	 * @return <code>toText().toString()</code>
 	 */
@@ -467,42 +466,42 @@ public abstract class FastAbstractCollection<E> implements Collection<E>, Iterab
 	/**
 	 * This inner class represents an unmodifiable view over the collection.
 	 */
-	private final class Unmodifiable extends FastAbstractCollection implements List, Set {
-		private static final long serialVersionUID = 0x564;
+	private final class Unmodifiable extends FastCollection implements List, Set {
+		private static final long serialVersionUID = 4211459903262453345L;
 		// Implements abstract method.
 		@Override
 		public int size() {
-			return FastAbstractCollection.this.size();
+			return FastCollection.this.size();
 		}
 		// Implements abstract method.
 		@Override
 		public Record head() {
-			return FastAbstractCollection.this.head();
+			return FastCollection.this.head();
 		}
 		// Implements abstract method.
 		@Override
 		public Record tail() {
-			return FastAbstractCollection.this.tail();
+			return FastCollection.this.tail();
 		}
 		// Implements abstract method.
 		@Override
 		public Object valueOf(Record record) {
-			return FastAbstractCollection.this.valueOf(record);
+			return FastCollection.this.valueOf(record);
 		}
 		// Forwards...
 		@Override
 		public boolean contains(Object value) {
-			return FastAbstractCollection.this.contains(value);
+			return FastCollection.this.contains(value);
 		}
 		// Forwards...
 		@Override
 		public boolean containsAll(Collection c) {
-			return FastAbstractCollection.this.containsAll(c);
+			return FastCollection.this.containsAll(c);
 		}
 		// Forwards...
 		@Override
 		public FastComparator getValueComparator() {
-			return FastAbstractCollection.this.getValueComparator();
+			return FastCollection.this.getValueComparator();
 		}
 		// Disallows...
 		@Override
@@ -521,7 +520,7 @@ public abstract class FastAbstractCollection<E> implements Collection<E>, Iterab
 			throw new UnsupportedOperationException("Unmodifiable");
 		}
 		public Object get(int index) {
-			return ((List) FastAbstractCollection.this).get(index);
+			return ((List) FastCollection.this).get(index);
 		}
 		public Object set(int index, Object element) {
 			throw new UnsupportedOperationException("Unmodifiable");
@@ -533,10 +532,10 @@ public abstract class FastAbstractCollection<E> implements Collection<E>, Iterab
 			throw new UnsupportedOperationException("Unmodifiable");
 		}
 		public int indexOf(Object o) {
-			return ((List) FastAbstractCollection.this).indexOf(o);
+			return ((List) FastCollection.this).indexOf(o);
 		}
 		public int lastIndexOf(Object o) {
-			return ((List) FastAbstractCollection.this).lastIndexOf(o);
+			return ((List) FastCollection.this).lastIndexOf(o);
 		}
 		public ListIterator listIterator() {
 			throw new UnsupportedOperationException("List iterator not supported for unmodifiable collection");
@@ -553,11 +552,11 @@ public abstract class FastAbstractCollection<E> implements Collection<E>, Iterab
 	 * collection.
 	 */
 	private static final Object NULL = new Object();
-	private final class Shared implements Collection, Serializable {
-		private static final long serialVersionUID = 0x564;
-		private final FastAbstractCollection<E> fc; // Backing FastCollection
+	private static final class Shared<E> implements Collection<E>, Serializable {
+		private static final long serialVersionUID = -4001656216177073815L;
+		private final FastCollection<E> fc; // Backing FastCollection
 		private final Object mutex; // Object on which to synchronize
-		private Shared(FastAbstractCollection<E> target) {
+		private Shared(FastCollection<E> target) {
 			if(target == null)
 				throw new NullPointerException();
 			fc = target;
@@ -595,7 +594,7 @@ public abstract class FastAbstractCollection<E> implements Collection<E>, Iterab
 		}
 		public boolean add(Object e) {
 			synchronized(mutex) {
-				return ((FastAbstractCollection) fc).add(e);
+				return ((FastCollection) fc).add(e);
 			}
 		}
 		public boolean remove(Object o) {

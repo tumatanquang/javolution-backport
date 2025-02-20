@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Set;
 import javolution.context.LocalContext;
 import javolution.util.internal.FastComparator;
-import javolution.util.internal.collection.FastAbstractCollection;
 /**
  * <p> This class represents a map which can be temporarily modified without
  *     impacting other threads ({@link LocalContext scoped} changes).</p>
@@ -197,30 +196,30 @@ public final class LocalMap<K, V> implements Map<K, V> {
 		}
 	}
 	/**
-	 * Returns a {@link FastAbstractCollection} view of the keys contained in this map.
+	 * Returns a {@link FastCollection} view of the keys contained in this map.
 	 *
 	 * @return a set view of the keys contained in this map
-	 *         (instance of {@link FastAbstractCollection}).
+	 *         (instance of {@link FastCollection}).
 	 */
 	public Set<K> keySet() {
 		return localMap().keySet();
 	}
 	/**
-	 * Returns a {@link FastAbstractCollection} view of the values contained in this
+	 * Returns a {@link FastCollection} view of the values contained in this
 	 * map.
 	 *
 	 * @return a collection view of the values contained in this map
-	 *         (instance of {@link FastAbstractCollection}).
+	 *         (instance of {@link FastCollection}).
 	 */
 	public Collection<V> values() {
 		return localMap().values();
 	}
 	/**
-	 * Returns a {@link FastAbstractCollection} view of the mappings contained in this
+	 * Returns a {@link FastCollection} view of the mappings contained in this
 	 * map.
 	 *
 	 * @return a collection view of the mappings contained in this map
-	 *         (instance of {@link FastAbstractCollection}).
+	 *         (instance of {@link FastCollection}).
 	 */
 	public Set<Map.Entry<K, V>> entrySet() {
 		return localMap().entrySet();

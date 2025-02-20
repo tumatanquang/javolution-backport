@@ -94,7 +94,7 @@ public final class XMLStreamReaderImpl implements XMLStreamReader, Reusable {
 	/**
 	 * Holds the data buffer for CharSequence produced by this parser.
 	 */
-	private char[] _data = new char[READER_BUFFER_CAPACITY * 2];
+	private char[] _data = new char[READER_BUFFER_CAPACITY << 1];
 	/**
 	 * Holds the current index of the data buffer (_data).
 	 */
@@ -134,7 +134,7 @@ public final class XMLStreamReaderImpl implements XMLStreamReader, Reusable {
 	/**
 	 * Indicates if characters are pending for potential coalescing.
 	 */
-	boolean _charactersPending = false;
+	boolean _charactersPending;
 	/**
 	 * Holds the start index for the current state within _data array.
 	 */
@@ -930,7 +930,7 @@ public final class XMLStreamReaderImpl implements XMLStreamReader, Reusable {
 	private final Runnable _createSeqLogic = new Runnable() {
 		public void run() {
 			if(_seqsCapacity >= _seqs.length) { // Resizes.
-				CharArray[] tmp = new CharArray[_seqs.length * 2];
+				CharArray[] tmp = new CharArray[_seqs.length << 1];
 				System.arraycopy(_seqs, 0, tmp, 0, _seqs.length);
 				_seqs = tmp;
 			}
@@ -950,7 +950,7 @@ public final class XMLStreamReaderImpl implements XMLStreamReader, Reusable {
 		//       spaces or indentation.
 		MemoryArea.getMemoryArea(this).executeInArea(new Runnable() {
 			public void run() {
-				char[] tmp = new char[_data.length * 2];
+				char[] tmp = new char[_data.length << 1];
 				javolution.context.LogContext
 						.info(new CharArray("XMLStreamReaderImpl: Data buffer increased to " + tmp.length));
 				System.arraycopy(_data, 0, tmp, 0, _data.length);
@@ -962,7 +962,7 @@ public final class XMLStreamReaderImpl implements XMLStreamReader, Reusable {
 	private void increaseStack() {
 		MemoryArea.getMemoryArea(this).executeInArea(new Runnable() {
 			public void run() {
-				CharArray[] tmp = new CharArray[_elemStack.length * 2];
+				CharArray[] tmp = new CharArray[_elemStack.length << 1];
 				javolution.context.LogContext
 						.info(new CharArray("XMLStreamReaderImpl: CharArray stack increased to " + tmp.length));
 				System.arraycopy(_elemStack, 0, tmp, 0, _elemStack.length);

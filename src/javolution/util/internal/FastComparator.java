@@ -3,8 +3,8 @@ import java.io.ObjectStreamException;
 import java.util.Comparator;
 import javolution.lang.Configurable;
 import javolution.text.Text;
+import javolution.util.FastCollection;
 import javolution.util.FastMap;
-import javolution.util.internal.collection.FastAbstractCollection;
 import javolution.xml.XMLSerializable;
 /**
  * <p> This class represents a comparator to be used for equality as well as
@@ -15,7 +15,7 @@ import javolution.xml.XMLSerializable;
  *
  * <p> {@link FastComparator} can be employed with {@link FastMap} (e.g. custom
  *     key comparators for identity maps, value retrieval using keys of a
- *     different class that the map keys) or with {@link FastAbstractCollection}
+ *     different class that the map keys) or with {@link FastCollection}
  *     classes.</p>
  *
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
@@ -38,7 +38,7 @@ public abstract class FastComparator<T> implements Comparator<T>, XMLSerializabl
 	private static boolean _Rehash = REHASH_SYSTEM_HASHCODE.get().booleanValue();
 	private static boolean isPoorSystemHash() {
 		boolean[] dist = new boolean[64]; // Length power of 2.
-		for(int i = 0; i < dist.length; i++) {
+		for(int i = 0; i < dist.length; ++i) {
 			dist[new Object().hashCode() & dist.length - 1] = true;
 		}
 		int occupied = 0;
@@ -290,9 +290,8 @@ public abstract class FastComparator<T> implements Comparator<T>, XMLSerializabl
 				// Right must be a CharSequence.
 				String seq1 = (String) left;
 				CharSequence seq2 = (CharSequence) right;
-				int i = 0;
 				int n = Math.min(seq1.length(), seq2.length());
-				while(n-- != 0) {
+				for(int i = 0; n-- != 0;) {
 					char c1 = seq1.charAt(i);
 					char c2 = seq2.charAt(i++);
 					if(c1 != c2)
@@ -305,9 +304,8 @@ public abstract class FastComparator<T> implements Comparator<T>, XMLSerializabl
 			// Both are CharSequence.
 			CharSequence seq1 = (CharSequence) left;
 			CharSequence seq2 = (CharSequence) right;
-			int i = 0;
 			int n = Math.min(seq1.length(), seq2.length());
-			while(n-- != 0) {
+			for(int i = 0; n-- != 0;) {
 				char c1 = seq1.charAt(i);
 				char c2 = seq2.charAt(i++);
 				if(c1 != c2)

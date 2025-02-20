@@ -6,12 +6,12 @@
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
-package javolution.util.internal.collection;
+package javolution.util;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import javolution.context.ObjectFactory;
 import javolution.context.StackContext;
-import javolution.util.internal.collection.FastAbstractCollection.Record;
+import javolution.util.FastCollection.Record;
 /**
  * <p> This class represents an iterator over a {@link Fastcollection).
  *     Iterations are thread-safe if the collections records are not removed
@@ -38,11 +38,11 @@ final class FastIterator implements Iterator {
 			iterator._tail = null;
 		}
 	};
-	private FastAbstractCollection _collection;
+	private FastCollection _collection;
 	private Record _current;
 	private Record _next;
 	private Record _tail;
-	public static FastIterator valueOf(FastAbstractCollection collection) {
+	public static FastIterator valueOf(FastCollection collection) {
 		FastIterator iterator = (FastIterator) FastIterator.FACTORY.object();
 		iterator._collection = collection;
 		iterator._next = collection.head().getNext();

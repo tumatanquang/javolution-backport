@@ -988,7 +988,7 @@ public class TextBuilder implements Appendable, CharSequence, Reusable, Realtime
 				else { // Add a new low block of 1024 elements.
 					int j = _capacity >> B1;
 					if(j >= _high.length) { // Resizes _high.
-						char[][] tmp = new char[_high.length * 2][];
+						char[][] tmp = new char[_high.length << 1][];
 						System.arraycopy(_high, 0, tmp, 0, _high.length);
 						_high = tmp;
 					}

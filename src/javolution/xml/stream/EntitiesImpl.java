@@ -12,8 +12,8 @@ import java.util.Iterator;
 import java.util.Map;
 import javolution.lang.Reusable;
 import javolution.text.CharArray;
-import javolution.util.internal.collection.FastAbstractCollection;
-import javolution.util.internal.collection.FastAbstractCollection.Record;
+import javolution.util.FastCollection;
+import javolution.util.FastCollection.Record;
 /**
  * This class holds defined entities while parsing.
  *
@@ -111,8 +111,8 @@ final class EntitiesImpl implements Reusable {
 	public void setEntitiesMapping(Map entityToReplacementText) {
 		// Sets the maximum length for replacement text.
 		Collection values = entityToReplacementText.values();
-		if(values instanceof FastAbstractCollection) { // Avoids allocating iterators.
-			FastAbstractCollection fc = (FastAbstractCollection) values;
+		if(values instanceof FastCollection) { // Avoids allocating iterators.
+			FastCollection fc = (FastCollection) values;
 			for(Record r = fc.head(), t = fc.tail(); (r = r.getNext()) != t;) {
 				CharSequence value = (CharSequence) fc.valueOf(r);
 				if(_maxLength < value.length()) {

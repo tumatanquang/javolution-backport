@@ -160,8 +160,7 @@ public abstract class WebServiceClient {
 	 * @param in the XML object reader.
 	 */
 	protected void readResponse(XMLObjectReader in) throws XMLStreamException {
-		final XMLStreamReader xml = in.getStreamReader();
-		while(xml.hasNext()) {
+		for(final XMLStreamReader xml = in.getStreamReader(); xml.hasNext();) {
 			switch(xml.next()) {
 			case XMLStreamReader.START_DOCUMENT:
 				System.out.println("Start Document");

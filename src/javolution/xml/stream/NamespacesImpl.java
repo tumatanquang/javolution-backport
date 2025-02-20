@@ -11,7 +11,7 @@ import java.util.Iterator;
 import javax.realtime.MemoryArea;
 import javolution.lang.Reusable;
 import javolution.text.CharArray;
-import javolution.util.FastList;
+import javolution.util.FastChain;
 /**
  * This class represents the namespaces stack while parsing.
  *
@@ -116,7 +116,7 @@ final class NamespacesImpl implements Reusable, NamespaceContext {
 	}
 	// Implements NamespaceContext
 	public Iterator getPrefixes(CharSequence namespaceURI) {
-		FastList prefixes = new FastList();
+		FastChain prefixes = new FastChain();
 		for(int i = _namespacesCount[_nesting]; --i >= 0;) {
 			if(_namespaces[i].equals(namespaceURI)) {
 				prefixes.add(_prefixes[i]);
@@ -207,7 +207,7 @@ final class NamespacesImpl implements Reusable, NamespaceContext {
 		MemoryArea.getMemoryArea(this).executeInArea(new Runnable() {
 			public void run() {
 				final int oldLength = _namespacesCount.length;
-				final int newLength = oldLength * 2;
+				final int newLength = oldLength << 1;
 				// Resizes namespaces counts.
 				int[] tmp = new int[newLength];
 				System.arraycopy(_namespacesCount, 0, tmp, 0, oldLength);
@@ -220,7 +220,7 @@ final class NamespacesImpl implements Reusable, NamespaceContext {
 		MemoryArea.getMemoryArea(this).executeInArea(new Runnable() {
 			public void run() {
 				final int oldLength = _prefixes.length;
-				final int newLength = oldLength * 2;
+				final int newLength = oldLength << 1;
 				// Resizes prefixes.
 				CharArray[] tmp0 = new CharArray[newLength];
 				System.arraycopy(_prefixes, 0, tmp0, 0, oldLength);

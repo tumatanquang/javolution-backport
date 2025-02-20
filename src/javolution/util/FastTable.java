@@ -20,9 +20,8 @@ import javax.realtime.MemoryArea;
 import javolution.context.ObjectFactory;
 import javolution.context.PersistentContext;
 import javolution.lang.MathLib;
+import javolution.lang.Reusable;
 import javolution.util.internal.FastComparator;
-import javolution.util.internal.collection.FastAbstractCollection;
-import javolution.util.internal.collection.FastAbstractList;
 /**
  * <p> This class represents a random access collection with real-time behavior
  *     (smooth capacity increase).</p>
@@ -35,7 +34,7 @@ import javolution.util.internal.collection.FastAbstractList;
  *          large chunk of memory to allocate (likely to trigger a
  *          full garbage collection due to memory fragmentation).</li>
  *     <li> Support concurrent access/iteration/modification without synchronization
- *          if marked {@link FastAbstractCollection#shared shared}. </li>
+ *          if marked {@link FastCollection#shared shared}. </li>
  *     </ul></p>
  *
  *  <p> Iterations over the {@link FastTable} values are faster when
@@ -46,14 +45,14 @@ import javolution.util.internal.collection.FastAbstractList;
  *     }[/code]</p>
  *
  *  <p> {@link FastTable} supports {@link #sort sorting} in place (quick sort)
- *      using the {@link FastAbstractCollection#getValueComparator() value comparator}
+ *      using the {@link FastCollection#getValueComparator() value comparator}
  *      for the table (no object or array allocation when sorting).</p>
  *
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.4.5, August 20, 2007
  */
-public class FastTable<E> extends FastAbstractList<E> implements RandomAccess {
-	private static final long serialVersionUID = 0x565;
+public class FastTable<E> extends FastList<E> implements List<E>, Reusable, RandomAccess {
+	private static final long serialVersionUID = -2258186618781046936L;
 	/**
 	 * Holds the factory for this fast table.
 	 */
@@ -110,7 +109,7 @@ public class FastTable<E> extends FastAbstractList<E> implements RandomAccess {
 			@Override
 			protected void notifyChange() {
 				FastTable.this.clear();
-				FastTable.this.addAll((FastList) this.get());
+				FastTable.this.addAll((FastChain) this.get());
 			}
 		};
 	}
@@ -469,7 +468,7 @@ public class FastTable<E> extends FastAbstractList<E> implements RandomAccess {
 	}
 	/**
 	 * Returns a view of the portion of this list between the specified
-	 * indexes (instance of {@link FastList} allocated from the "stack" when
+	 * indexes (instance of {@link FastChain} allocated from the "stack" when
 	 * executing in a {@link javolution.context.StackContext StackContext}).
 	 * If the specified indexes are equal, the returned list is empty.
 	 * The returned list is backed by this list, so non-structural changes in
@@ -517,7 +516,7 @@ public class FastTable<E> extends FastAbstractList<E> implements RandomAccess {
 	}
 	/**
 	 * Sorts this table in place (quick sort) using this table
-	 * {@link FastAbstractCollection#getValueComparator() value comparator}
+	 * {@link FastCollection#getValueComparator() value comparator}
 	 * (smallest first).
 	 *
 	 * @return <code>this</code>
@@ -604,8 +603,8 @@ public class FastTable<E> extends FastAbstractList<E> implements RandomAccess {
 	}
 	// Overrides  to return a list (JDK1.5+).
 	@Override
-	public List<E> unmodifiable() {
-		return (List<E>) super.unmodifiable();
+	public FastTable<E> unmodifiable() {
+		return new FastTable<E>(super.unmodifiable());
 	}
 	// Overrides  to return a list (JDK1.5+).
 	@Override
@@ -665,7 +664,7 @@ public class FastTable<E> extends FastAbstractList<E> implements RandomAccess {
 				else { // Add a new low block of 1024 elements.
 					int j = _capacity >> B1;
 					if(j >= _high.length) { // Resizes _high.
-						E[][] tmp = (E[][]) new Object[_high.length * 2][];
+						E[][] tmp = (E[][]) new Object[_high.length << 1][];
 						System.arraycopy(_high, 0, tmp, 0, _high.length);
 						_high = tmp;
 					}
@@ -887,7 +886,7 @@ public class FastTable<E> extends FastAbstractList<E> implements RandomAccess {
 	/**
 	* This inner class implements a sub-table.
 	*/
-	private static final class SubTable extends FastAbstractCollection implements List, RandomAccess {
+	private static final class SubTable extends FastCollection implements List, RandomAccess {
 		private static final long serialVersionUID = 0x564;
 		private static final ObjectFactory FACTORY = new ObjectFactory() {
 			@Override

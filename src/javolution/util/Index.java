@@ -18,7 +18,7 @@ import javolution.text.Cursor;
 import javolution.text.Text;
 import javolution.text.TextFormat;
 import javolution.text.TypeFormat;
-import javolution.util.internal.collection.FastAbstractCollection.Record;
+import javolution.util.FastCollection.Record;
 import javolution.xml.XMLSerializable;
 /**
  * <p> This class represents a <b>unique</b> index which can be used instead of
@@ -46,7 +46,7 @@ import javolution.xml.XMLSerializable;
  * @version 5.1, July 26, 2007
  */
 public final class Index extends Number implements Comparable<Index>, Record, Realtime, Immutable, XMLSerializable {
-	private static final long serialVersionUID = 0x565;
+	private static final long serialVersionUID = 766651288828956718L;
 	/**
 	 * Holds the default text format.
 	 */
@@ -202,10 +202,10 @@ public final class Index extends Number implements Comparable<Index>, Record, Re
 	}
 	private static final Runnable AUGMENT_POSITIVE = new Runnable() {
 		public void run() {
-			for(int i = _PositiveIndicesLength, n = _PositiveIndicesLength + INCREASE_AMOUNT; i < n; i++) {
+			for(int i = _PositiveIndicesLength, n = _PositiveIndicesLength + INCREASE_AMOUNT; i < n; ++i) {
 				Index index = new Index(i);
 				if(_PositiveIndices.length <= i) { // Resize.
-					Index[] tmp = new Index[_PositiveIndices.length * 2];
+					Index[] tmp = new Index[_PositiveIndices.length << 1];
 					System.arraycopy(_PositiveIndices, 0, tmp, 0, _PositiveIndices.length);
 					_PositiveIndices = tmp;
 				}
@@ -216,10 +216,10 @@ public final class Index extends Number implements Comparable<Index>, Record, Re
 	};
 	private static final Runnable AUGMENT_NEGATIVE = new Runnable() {
 		public void run() {
-			for(int i = _NegativeIndicesLength, n = _NegativeIndicesLength + INCREASE_AMOUNT; i < n; i++) {
+			for(int i = _NegativeIndicesLength, n = _NegativeIndicesLength + INCREASE_AMOUNT; i < n; ++i) {
 				Index index = new Index(-i);
 				if(_NegativeIndices.length <= i) { // Resize.
-					Index[] tmp = new Index[_NegativeIndices.length * 2];
+					Index[] tmp = new Index[_NegativeIndices.length << 1];
 					System.arraycopy(_NegativeIndices, 0, tmp, 0, _NegativeIndices.length);
 					_NegativeIndices = tmp;
 				}

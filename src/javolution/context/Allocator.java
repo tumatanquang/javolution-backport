@@ -68,7 +68,7 @@ public abstract class Allocator<T> {
 	 * same allocator as implementation should keep the queue small).
 	 */
 	void resize() {
-		T[] tmp = (T[]) new Object[queue.length * 2];
+		T[] tmp = (T[]) new Object[queue.length << 1];
 		System.arraycopy(queue, 0, tmp, 0, queue.length);
 		queue = tmp;
 	}

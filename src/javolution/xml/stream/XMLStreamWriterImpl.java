@@ -546,7 +546,7 @@ public final class XMLStreamWriterImpl implements XMLStreamWriter, Reusable {
 		if(_indentation != null) {
 			writeNoEscape(_lineSeparator);
 			_indentationLevel = _nesting;
-			for(int i = 0; i < _indentationLevel; i++) {
+			for(int i = 0; i < _indentationLevel; ++i) {
 				writeNoEscape(_indentation);
 			}
 		}
@@ -639,7 +639,7 @@ public final class XMLStreamWriterImpl implements XMLStreamWriter, Reusable {
 		int i0 = _nesting > 1 ? _namespaces._namespacesCount[_nesting - 2] : NamespacesImpl.NBR_PREDEFINED_NAMESPACES;
 		int i1 = _namespaces._namespacesCount[_nesting - 1];
 		int i2 = _namespaces._namespacesCount[_nesting];
-		for(int i = i0; i < i2; i++) {
+		for(int i = i0; i < i2; ++i) {
 			if(_isRepairingNamespaces && i < i1 && !_namespaces._prefixesWritten[i]
 					|| i >= i1 && _namespaces._prefixesWritten[i]) { // Write namespace.
 				// In repairing mode, removes redondancy.
@@ -677,12 +677,12 @@ public final class XMLStreamWriterImpl implements XMLStreamWriter, Reusable {
 		MemoryArea.getMemoryArea(this).executeInArea(new Runnable() {
 			public void run() {
 				final int oldLength = _qNames.length;
-				final int newLength = oldLength * 2;
+				final int newLength = oldLength << 1;
 				// Resizes elements qNames stack.
 				TextBuilder[] tmp = new TextBuilder[newLength];
 				System.arraycopy(_qNames, 0, tmp, 0, oldLength);
 				_qNames = tmp;
-				for(int i = oldLength; i < newLength; i++) {
+				for(int i = oldLength; i < newLength; ++i) {
 					_qNames[i] = new TextBuilder();
 				}
 			}

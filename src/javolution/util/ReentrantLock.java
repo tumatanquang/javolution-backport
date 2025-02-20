@@ -36,7 +36,7 @@ public class ReentrantLock {
 		Thread caller = Thread.currentThread();
 		synchronized(this) {
 			if(caller == _owner) {
-				_count++;
+				++_count;
 			}
 			else {
 				try {

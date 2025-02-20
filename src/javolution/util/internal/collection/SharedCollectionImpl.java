@@ -11,15 +11,17 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import javolution.lang.Reusable;
+import javolution.util.FastList;
 import javolution.util.internal.ReadWriteLockImpl;
 /**
  * A shared view over a collection (reads-write locks).
  */
-public final class SharedCollectionImpl<E> extends FastAbstractList<E> {
-	private static final long serialVersionUID = 0x565;
-	private final FastAbstractList<E> fc;
+public final class SharedCollectionImpl<E> extends FastList<E> implements List<E>, Reusable {
+	private static final long serialVersionUID = -2136254040285582378L;
+	private final FastList<E> fc;
 	private final ReadWriteLockImpl lock;
-	public SharedCollectionImpl(FastAbstractList<E> inner) {
+	public SharedCollectionImpl(FastList<E> inner) {
 		fc = inner;
 		lock = new ReadWriteLockImpl();
 	}
@@ -44,10 +46,10 @@ public final class SharedCollectionImpl<E> extends FastAbstractList<E> {
 		}
 	}
 	@Override
-	public boolean addAll(Collection<? extends E> that) {
+	public boolean addAll(Collection<? extends E> c) {
 		lock.writeLock.lock();
 		try {
-			return fc.addAll(that);
+			return fc.addAll(c);
 		}
 		finally {
 			lock.writeLock.unlock();
@@ -74,20 +76,20 @@ public final class SharedCollectionImpl<E> extends FastAbstractList<E> {
 		}
 	}
 	@Override
-	public boolean contains(Object searched) {
+	public boolean contains(Object value) {
 		lock.readLock.lock();
 		try {
-			return fc.contains(searched);
+			return fc.contains(value);
 		}
 		finally {
 			lock.readLock.unlock();
 		}
 	}
 	@Override
-	public boolean containsAll(Collection<?> that) {
+	public boolean containsAll(Collection<?> c) {
 		lock.readLock.lock();
 		try {
-			return fc.containsAll(that);
+			return fc.containsAll(c);
 		}
 		finally {
 			lock.readLock.unlock();
@@ -176,20 +178,20 @@ public final class SharedCollectionImpl<E> extends FastAbstractList<E> {
 		}
 	}
 	@Override
-	public boolean remove(Object searched) {
+	public boolean remove(Object value) {
 		lock.writeLock.lock();
 		try {
-			return fc.remove(searched);
+			return fc.remove(value);
 		}
 		finally {
 			lock.writeLock.unlock();
 		}
 	}
 	@Override
-	public boolean removeAll(Collection<?> that) {
+	public boolean removeAll(Collection<?> c) {
 		lock.writeLock.lock();
 		try {
-			return fc.removeAll(that);
+			return fc.removeAll(c);
 		}
 		finally {
 			lock.writeLock.unlock();
@@ -205,10 +207,10 @@ public final class SharedCollectionImpl<E> extends FastAbstractList<E> {
 		}
 	}
 	@Override
-	public boolean retainAll(Collection<?> that) {
+	public boolean retainAll(Collection<?> c) {
 		lock.writeLock.lock();
 		try {
-			return fc.retainAll(that);
+			return fc.retainAll(c);
 		}
 		finally {
 			lock.writeLock.unlock();
