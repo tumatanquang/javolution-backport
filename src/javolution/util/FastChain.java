@@ -119,7 +119,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 		_tail._previous = _head;
 		Node<E> previous = _tail;
 		for(int i = -1; ++i < capacity;) {
-			Node<E> newNode = newNode();
+			final Node<E> newNode = newNode();
 			newNode._previous = previous;
 			previous._next = newNode;
 			previous = newNode;
@@ -153,18 +153,106 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 	public static void recycle(FastChain instance) {
 		FACTORY.recycle(instance);
 	}
+	///////////////////////
+	// Contract Methods. //
+	///////////////////////
+	// Implements abstract method.
+	@Override
+	public int size() {
+		return _size;
+	}
+	// Overrides.
+	@Override
+	public boolean isEmpty() {
+		return _size == 0;
+	}
+	// Overrides (optimization).
+	@Override
+	public boolean contains(Object o) {
+		return indexOf(o) >= 0;
+	}
+	/**
+	 * Returns a simple iterator over the elements in this list
+	 * (allocated on the stack when executed in a
+	 * {@link javolution.context.StackContext StackContext}).
+	 *
+	 * @return an iterator over this list values.
+	 */
+	@Override
+	public Iterator<E> iterator() {
+		return listIterator();
+	}
 	/**
 	 * Appends the specified value to the end of this list
 	 * (equivalent to {@link #addLast}).
 	 *
-	 * @param value the value to be appended to this list.
+	 * @param o the value to be appended to this list.
 	 * @return <code>true</code> (as per the general contract of the
 	 *         <code>Collection.add</code> method).
 	 */
 	@Override
-	public boolean add(E value) {
-		addLast(value);
+	public boolean add(E o) {
+		addLast(o);
 		return true;
+	}
+	// Overrides.
+	@Override
+	public boolean remove(Object o) {
+		final int index = indexOf(o);
+		if(index >= 0) {
+			remove(index);
+			return true;
+		}
+		return false;
+	}
+	/**
+	 * Appends all of the elements in the specified collection to the end of
+	 * this list, in the order that they are returned by the specified
+	 * collection's iterator.  The behavior of this operation is undefined if
+	 * the specified collection is modified while the operation is in
+	 * progress.  (Note that this will occur if the specified collection is
+	 * this list, and it's nonempty.)
+	 *
+	 * @param c collection containing elements to be added to this list
+	 * @return {@code true} if this list changed as a result of the call
+	 * @throws NullPointerException if the specified collection is null
+	 */
+	@Override
+	public boolean addAll(Collection<? extends E> values) {
+		return addAll(_size, values);
+	}
+	/**
+	 * Inserts all of the values in the specified collection into this
+	 * list at the specified position. Shifts the value currently at that
+	 * position (if any) and any subsequent values to the right
+	 * (increases their indices).
+	 *
+	 * @param index the index at which to insert first value from the specified
+	 *        collection.
+	 * @param values the values to be inserted into this list.
+	 * @return <code>true</code> if this list changed as a result of the call;
+	 *         <code>false</code> otherwise.
+	 * @throws IndexOutOfBoundsException if <code>(index < 0) ||
+	 *         (index > size())</code>
+	 */
+	@Override
+	public boolean addAll(int index, Collection<? extends E> values) {
+		if(index < 0 || index > _size)
+			throw new IndexOutOfBoundsException("index: " + index);
+		final Node indexNode = nodeAt(index);
+		for(Iterator<? extends E> i = values.iterator(); i.hasNext();) {
+			addBefore(indexNode, i.next());
+		}
+		return values.size() != 0;
+	}
+	// Overrides (optimization).
+	@Override
+	public void clear() {
+		_size = 0;
+		for(Node<E> n = _head, end = _tail; (n = n._next) != end;) {
+			n._value = null;
+		}
+		_tail = _head._next;
 	}
 	/**
 	 * Returns the value at the specified position in this list.
@@ -195,7 +283,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 		if(index < 0 || index >= _size)
 			throw new IndexOutOfBoundsException("index: " + index);
 		final Node<E> node = nodeAt(index);
-		E previousValue = node._value;
+		final E previousValue = node._value;
 		node._value = value;
 		return previousValue;
 	}
@@ -217,30 +305,6 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 		addBefore(nodeAt(index), value);
 	}
 	/**
-	 * Inserts all of the values in the specified collection into this
-	 * list at the specified position. Shifts the value currently at that
-	 * position (if any) and any subsequent values to the right
-	 * (increases their indices).
-	 *
-	 * @param index the index at which to insert first value from the specified
-	 *        collection.
-	 * @param values the values to be inserted into this list.
-	 * @return <code>true</code> if this list changed as a result of the call;
-	 *         <code>false</code> otherwise.
-	 * @throws IndexOutOfBoundsException if <code>(index < 0) ||
-	 *         (index > size())</code>
-	 */
-	@Override
-	public boolean addAll(int index, Collection<? extends E> values) {
-		if(index < 0 || index > _size)
-			throw new IndexOutOfBoundsException("index: " + index);
-		final Node indexNode = nodeAt(index);
-		for(Iterator<? extends E> i = values.iterator(); i.hasNext();) {
-			addBefore(indexNode, i.next());
-		}
-		return values.size() != 0;
-	}
-	/**
 	 * Removes the value at the specified position in this list.
 	 * Shifts any subsequent values to the left (subtracts one
 	 * from their indices). Returns the value that was removed from the
@@ -256,7 +320,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 		if(index < 0 || index >= _size)
 			throw new IndexOutOfBoundsException("index: " + index);
 		final Node<E> node = nodeAt(index);
-		E previousValue = node._value;
+		final E previousValue = node._value;
 		delete(node);
 		return previousValue;
 	}
@@ -264,16 +328,16 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 	 * Returns the index in this list of the first occurrence of the specified
 	 * value, or -1 if this list does not contain this value.
 	 *
-	 * @param value the value to search for.
+	 * @param o the value to search for.
 	 * @return the index in this list of the first occurrence of the specified
 	 *         value, or -1 if this list does not contain this value.
 	 */
 	@Override
-	public int indexOf(Object value) {
+	public int indexOf(Object o) {
 		final FastComparator comp = this.getValueComparator();
 		int index = 0;
 		for(Node n = _head, end = _tail; (n = n._next) != end; ++index) {
-			if(comp == FastComparator.DEFAULT ? defaultEquals(value, n._value) : comp.areEqual(value, n._value))
+			if(comp == FastComparator.DEFAULT ? defaultEquals(o, n._value) : comp.areEqual(o, n._value))
 				return index;
 		}
 		return -1;
@@ -282,30 +346,19 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 	 * Returns the index in this list of the last occurrence of the specified
 	 * value, or -1 if this list does not contain this value.
 	 *
-	 * @param value the value to search for.
+	 * @param o the value to search for.
 	 * @return the index in this list of the last occurrence of the specified
 	 *         value, or -1 if this list does not contain this value.
 	 */
 	@Override
-	public int lastIndexOf(Object value) {
+	public int lastIndexOf(Object o) {
 		final FastComparator comp = this.getValueComparator();
 		int index = size() - 1;
 		for(Node n = _tail, end = _head; (n = n._previous) != end; --index) {
-			if(comp == FastComparator.DEFAULT ? defaultEquals(value, n._value) : comp.areEqual(value, n._value))
+			if(comp == FastComparator.DEFAULT ? defaultEquals(o, n._value) : comp.areEqual(o, n._value))
 				return index;
 		}
 		return -1;
-	}
-	/**
-	 * Returns a simple iterator over the elements in this list
-	 * (allocated on the stack when executed in a
-	 * {@link javolution.context.StackContext StackContext}).
-	 *
-	 * @return an iterator over this list values.
-	 */
-	@Override
-	public Iterator<E> iterator() {
-		return listIterator();
 	}
 	/**
 	 * Returns a list iterator over the elements in this list
@@ -379,6 +432,39 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 					"fromIndex: " + fromIndex + ", toIndex: " + toIndex + " for list of size: " + _size);
 		return SubList.valueOf(this, nodeAt(fromIndex)._previous, nodeAt(toIndex), toIndex - fromIndex);
 	}
+	// Implements FastCollection abstract method.
+	@Override
+	public Node<E> head() {
+		return _head;
+	}
+	// Implements FastCollection abstract method.
+	@Override
+	public Node<E> tail() {
+		return _tail;
+	}
+	// Implements FastCollection abstract method.
+	@Override
+	public E valueOf(Record record) {
+		return ((Node<E>) record)._value;
+	}
+	// Implements FastCollection abstract method.
+	@Override
+	public void delete(Record record) {
+		final Node<E> node = (Node<E>) record;
+		--_size;
+		node._value = null;
+		// Detaches.
+		node._previous._next = node._next;
+		node._next._previous = node._previous;
+		// Inserts after _tail.
+		final Node<E> next = _tail._next;
+		node._previous = _tail;
+		node._next = next;
+		_tail._next = node;
+		if(next != null) {
+			next._previous = node;
+		}
+	}
 	/**
 	 * Returns the first value of this list.
 	 *
@@ -434,7 +520,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 		final Node<E> first = _head._next;
 		if(first == _tail)
 			throw new NoSuchElementException();
-		E previousValue = first._value;
+		final E previousValue = first._value;
 		delete(first);
 		return previousValue;
 	}
@@ -497,66 +583,6 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 		}
 		return node;
 	}
-	// Implements FastCollection abstract method.
-	@Override
-	public Node<E> head() {
-		return _head;
-	}
-	// Implements FastCollection abstract method.
-	@Override
-	public Node<E> tail() {
-		return _tail;
-	}
-	// Implements FastCollection abstract method.
-	@Override
-	public E valueOf(Record record) {
-		return ((Node<E>) record)._value;
-	}
-	// Implements FastCollection abstract method.
-	@Override
-	public void delete(Record record) {
-		Node<E> node = (Node<E>) record;
-		--_size;
-		node._value = null;
-		// Detaches.
-		node._previous._next = node._next;
-		node._next._previous = node._previous;
-		// Inserts after _tail.
-		final Node<E> next = _tail._next;
-		node._previous = _tail;
-		node._next = next;
-		_tail._next = node;
-		if(next != null) {
-			next._previous = node;
-		}
-	}
-	// Overrides (optimization).
-	@Override
-	public boolean contains(Object value) {
-		return indexOf(value) >= 0;
-	}
-	///////////////////////
-	// Contract Methods. //
-	///////////////////////
-	// Implements abstract method.
-	@Override
-	public int size() {
-		return _size;
-	}
-	// Overrides (optimization).
-	@Override
-	public void clear() {
-		_size = 0;
-		for(Node<E> n = _head, end = _tail; (n = n._next) != end;) {
-			n._value = null;
-		}
-		_tail = _head._next;
-	}
-	// Overrides.
-	@Override
-	public boolean isEmpty() {
-		return _size == 0;
-	}
 	/**
 	 * Sets the comparator to use for value equality.
 	 *
@@ -618,7 +644,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 	private void increaseCapacity() {
 		MemoryArea.getMemoryArea(this).executeInArea(new Runnable() {
 			public void run() {
-				Node<E> newNode0 = newNode();
+				final Node<E> newNode0 = newNode();
 				_tail._next = newNode0;
 				newNode0._previous = _tail;
 				Node<E> newNode1 = newNode();
@@ -639,7 +665,6 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 		this.setValueComparator(FastComparator.DEFAULT);
 	}
 	/*private static final class Shared<E> extends FastList<E> implements Collection<E>, Serializable {
-		private static final long serialVersionUID = 0x564;
 		private final FastList<E> list; // Backing FastList
 		private final Object mutex; // Object on which to synchronize
 		private Shared(FastList<E> target) {
@@ -649,9 +674,9 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 			mutex = this;
 		}
 		@Override
-		public boolean add(E e) {
+		public boolean add(E o) {
 			synchronized(mutex) {
-				return list.add(e);
+				return list.add(o);
 			}
 		}
 		@Override
@@ -849,8 +874,8 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 	 *        }
 	 *    }[/code]
 	 */
-	public static class Node<E> implements Record, Serializable {
-		private static final long serialVersionUID = 0x564;
+	public static final class Node<E> implements Record, Serializable {
+		private static final long serialVersionUID = 5048285640249643362L;
 		/**
 		 * Holds the next node.
 		 */
@@ -888,7 +913,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 	 * This inner class implements a sub-list.
 	 */
 	private static final class SubList extends FastCollection implements List, Serializable {
-		private static final long serialVersionUID = 0x564;
+		private static final long serialVersionUID = 2301440012385715158L;
 		private static final ObjectFactory FACTORY = new ObjectFactory() {
 			@Override
 			protected Object create() {
@@ -896,7 +921,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 			}
 			@Override
 			protected void cleanup(Object obj) {
-				SubList sl = (SubList) obj;
+				final SubList sl = (SubList) obj;
 				sl._list = null;
 				sl._head = null;
 				sl._tail = null;
@@ -907,7 +932,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 		private Node _tail;
 		private int _size;
 		public static SubList valueOf(FastChain list, Node head, Node tail, int size) {
-			SubList subList = (SubList) FACTORY.object();
+			final SubList subList = (SubList) FACTORY.object();
 			subList._list = list;
 			subList._head = head;
 			subList._tail = tail;
@@ -952,7 +977,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 			if(index < 0 || index >= _size)
 				throw new IndexOutOfBoundsException("index: " + index);
 			final Node node = nodeAt(index);
-			Object previousValue = node._value;
+			final Object previousValue = node._value;
 			node._value = value;
 			return previousValue;
 		}
@@ -965,7 +990,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 			if(index < 0 || index >= _size)
 				throw new IndexOutOfBoundsException("index: " + index);
 			final Node node = nodeAt(index);
-			Object previousValue = node._value;
+			final Object previousValue = node._value;
 			_list.delete(node);
 			return previousValue;
 		}
@@ -999,7 +1024,8 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 			if(fromIndex < 0 || toIndex > _size || fromIndex > toIndex)
 				throw new IndexOutOfBoundsException(
 						"fromIndex: " + fromIndex + ", toIndex: " + toIndex + " for list of size: " + _size);
-			SubList subList = SubList.valueOf(_list, nodeAt(fromIndex)._previous, nodeAt(toIndex), toIndex - fromIndex);
+			final SubList subList = SubList.valueOf(_list, nodeAt(fromIndex)._previous, nodeAt(toIndex),
+					toIndex - fromIndex);
 			return subList;
 		}
 		private final Node nodeAt(int index) {
@@ -1029,7 +1055,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 			}
 			@Override
 			protected void cleanup(Object obj) {
-				FastListIterator i = (FastListIterator) obj;
+				final FastListIterator i = (FastListIterator) obj;
 				i._list = null;
 				i._currentNode = null;
 				i._nextNode = null;
@@ -1041,7 +1067,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 		private int _length;
 		private int _nextIndex;
 		public static FastListIterator valueOf(FastChain list, Node nextNode, int nextIndex, int size) {
-			FastListIterator itr = (FastListIterator) FACTORY.object();
+			final FastListIterator itr = (FastListIterator) FACTORY.object();
 			itr._list = list;
 			itr._nextNode = nextNode;
 			itr._nextIndex = nextIndex;
@@ -1054,7 +1080,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 		public Object next() {
 			if(_nextIndex == _length)
 				throw new NoSuchElementException();
-			_nextIndex++;
+			++_nextIndex;
 			_currentNode = _nextNode;
 			_nextNode = _nextNode._next;
 			return _currentNode._value;
@@ -1068,7 +1094,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 		public Object previous() {
 			if(_nextIndex == 0)
 				throw new NoSuchElementException();
-			_nextIndex--;
+			--_nextIndex;
 			_currentNode = _nextNode = _nextNode._previous;
 			return _currentNode._value;
 		}
@@ -1078,8 +1104,8 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 		public void add(Object o) {
 			_list.addBefore(_nextNode, o);
 			_currentNode = null;
-			_length++;
-			_nextIndex++;
+			++_length;
+			++_nextIndex;
 		}
 		public void set(Object o) {
 			if(_currentNode == null)
@@ -1093,11 +1119,11 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 				_nextNode = _nextNode._next;
 			}
 			else {
-				_nextIndex--;
+				--_nextIndex;
 			}
 			_list.delete(_currentNode);
 			_currentNode = null;
-			_length--;
+			--_length;
 		}
 	}
 	// For inlining of default comparator.

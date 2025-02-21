@@ -26,10 +26,20 @@ public final class SharedCollectionImpl<E> extends FastList<E> implements List<E
 		lock = new ReadWriteLockImpl();
 	}
 	@Override
-	public boolean add(E element) {
+	public boolean add(E o) {
 		lock.writeLock.lock();
 		try {
-			return fc.add(element);
+			return fc.add(o);
+		}
+		finally {
+			lock.writeLock.unlock();
+		}
+	}
+	@Override
+	public boolean remove(Object o) {
+		lock.writeLock.lock();
+		try {
+			return fc.remove(o);
 		}
 		finally {
 			lock.writeLock.unlock();
@@ -76,10 +86,10 @@ public final class SharedCollectionImpl<E> extends FastList<E> implements List<E
 		}
 	}
 	@Override
-	public boolean contains(Object value) {
+	public boolean contains(Object o) {
 		lock.readLock.lock();
 		try {
-			return fc.contains(value);
+			return fc.contains(o);
 		}
 		finally {
 			lock.readLock.unlock();
@@ -172,16 +182,6 @@ public final class SharedCollectionImpl<E> extends FastList<E> implements List<E
 		lock.writeLock.lock();
 		try {
 			return fc.remove(index);
-		}
-		finally {
-			lock.writeLock.unlock();
-		}
-	}
-	@Override
-	public boolean remove(Object value) {
-		lock.writeLock.lock();
-		try {
-			return fc.remove(value);
 		}
 		finally {
 			lock.writeLock.unlock();
