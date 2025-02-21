@@ -1,4 +1,4 @@
-name: Build Javolution backport on JDK 5 and 6
+name: Build and release Javolution backport artifact
 
 on:
   push:
