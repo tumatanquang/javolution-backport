@@ -88,7 +88,7 @@
 				<include name="**/doc-files/*"/>
 			</fileset>
 		</copy>
-		<javadoc sourcepath="${tmp}" destdir="${api}" windowtitle="Javolution Backport v${version} API" overview="src/overview.html" author="true" version="true" classpath="${bin}" charset="${encoding}" encoding="${encoding}" docencoding="${encoding}" stylesheetfile="css/javadoc.css" splitindex="true">
+		<javadoc sourcepath="${tmp}" destdir="${api}" windowtitle="Javolution Backport ${version} API" overview="src/overview.html" author="true" version="true" classpath="${bin}" charset="${encoding}" encoding="${encoding}" docencoding="${encoding}" stylesheetfile="css/javadoc.css" splitindex="true">
 			<header>
 				<![CDATA[<A HREF="http://javolution.org">
 				<SPAN CLASS="style0">J</SPAN>
