@@ -11,7 +11,7 @@ import java.util.Iterator;
 import javax.realtime.MemoryArea;
 import javolution.lang.Reusable;
 import javolution.text.CharArray;
-import javolution.util.FastChain;
+import javolution.util.FastSequence;
 /**
  * This class represents the namespaces stack while parsing.
  *
@@ -116,7 +116,7 @@ final class NamespacesImpl implements Reusable, NamespaceContext {
 	}
 	// Implements NamespaceContext
 	public Iterator getPrefixes(CharSequence namespaceURI) {
-		FastChain prefixes = new FastChain();
+		FastSequence prefixes = new FastSequence();
 		for(int i = _namespacesCount[_nesting]; --i >= 0;) {
 			if(_namespaces[i].equals(namespaceURI)) {
 				prefixes.add(_prefixes[i]);

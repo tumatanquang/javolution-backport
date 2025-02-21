@@ -1,4 +1,4 @@
-# Javolution backport
+# Javolution Backport
 
 Based on [Javolution 5.5.1](https://mvnrepository.com/artifact/javolution/javolution/5.5.1) source code.
 
@@ -11,18 +11,19 @@ This project has removed `final` to allow overriding of the public methods of th
 ### WARNING:
 
 - Since v5.6.6: The original `FastList` has been replaced with `FastChain`!
+- Since v5.6.8: The original `FastChain` has been replaced with `FastSequence`!
 
 ## Suggestions for use:
 
 - `ArrayList` can be replaced with `FastTable`.
-- `LinkedList` can be replaced with `FastChain`.
-- Initialize `FastTable` / `FastChain`:
+- `LinkedList` can be replaced with `FastSequence`.
+- Initialize `FastTable` / `FastSequence`:
 
 ```java
 FastTable table = new FastTable();
-FastChain list = new FastChain();
+FastSequence list = new FastSequence();
 FastList list = new FastTable();
-FastList list = new FastChain();
+FastList list = new FastSequence();
 ```
 
 ## How to build?

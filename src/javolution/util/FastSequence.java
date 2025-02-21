@@ -34,14 +34,14 @@ import javolution.util.internal.FastComparator;
  *     Random access operations can be significantly accelerated by
  *     {@link #subList splitting} the list into smaller ones.</p>
  *
- * <p> {@link FastChain} (as for any {@link FastCollection} sub-class) supports
+ * <p> {@link FastSequence} (as for any {@link FastCollection} sub-class) supports
  *     fast iterations without using iterators.[code]
- *     FastList<String> list = new FastList<String>();
- *     for (FastList.Node<String> n = list.head(), end = list.tail(); (n = n.getNext()) != end;) {
+ *     FastSequence<String> list = new FastSequence<String>();
+ *     for (FastSequence.Node<String> n = list.head(), end = list.tail(); (n = n.getNext()) != end;) {
  *         String value = n.getValue(); // No typecast necessary.
  *     }[/code]</p>
  *
- * <p> {@link FastChain} are {@link Reusable reusable}, they maintain
+ * <p> {@link FastSequence} are {@link Reusable reusable}, they maintain
  *     internal pools of {@link Node nodes} objects. When a node is removed
  *     from its list, it is automatically restored to its pool.</p>
  *
@@ -52,7 +52,7 @@ import javolution.util.internal.FastComparator;
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 4.2, December 18, 2006
  */
-public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
+public class FastSequence<E> extends FastList<E> implements List<E>, Reusable {
 	private static final long serialVersionUID = 8444227326949464185L;
 	/**
 	 * Default initial capacity.
@@ -64,7 +64,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 	private static final ObjectFactory FACTORY = new ObjectFactory() {
 		@Override
 		public Object create() {
-			return new FastChain();
+			return new FastSequence();
 		}
 	};
 	/**
@@ -86,7 +86,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 	/**
 	 * Creates a list of small initial capacity.
 	 */
-	public FastChain() {
+	public FastSequence() {
 		this(DEFAULT_CAPACITY);
 	}
 	/**
@@ -97,13 +97,13 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 	 * @throws IllegalArgumentException if the identifier is not unique.
 	 * @see javolution.context.PersistentContext.Reference
 	 */
-	public FastChain(String id) {
+	public FastSequence(String id) {
 		this();
 		new PersistentContext.Reference(id, this) {
 			@Override
 			protected void notifyChange() {
-				FastChain.this.clear();
-				FastChain.this.addAll((FastChain) this.get());
+				FastSequence.this.clear();
+				FastSequence.this.addAll((FastSequence) this.get());
 			}
 		};
 	}
@@ -114,7 +114,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 	 *
 	 * @param capacity the initial capacity.
 	 */
-	public FastChain(int capacity) {
+	public FastSequence(int capacity) {
 		_head._next = _tail;
 		_tail._previous = _head;
 		Node<E> previous = _tail;
@@ -131,7 +131,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 	 *
 	 * @param values the values to be placed into this list.
 	 */
-	public FastChain(Collection<? extends E> values) {
+	public FastSequence(Collection<? extends E> values) {
 		this(values.size());
 		addAll(values);
 	}
@@ -142,15 +142,15 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 	 *
 	 * @return a new, preallocated or recycled list instance.
 	 */
-	public static <E> FastChain<E> newInstance() {
-		return (FastChain<E>) FACTORY.object();
+	public static <E> FastSequence<E> newInstance() {
+		return (FastSequence<E>) FACTORY.object();
 	}
 	/**
 	 * Recycles a list {@link #newInstance() instance} immediately
 	 * (on the stack when executing in a {@link javolution.context.StackContext
 	 * StackContext}).
 	 */
-	public static void recycle(FastChain instance) {
+	public static void recycle(FastSequence instance) {
 		FACTORY.recycle(instance);
 	}
 	///////////////////////
@@ -589,7 +589,7 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 	 * @param comparator the value comparator.
 	 * @return <code>this</code>
 	 */
-	public FastChain<E> setValueComparator(FastComparator<? super E> comparator) {
+	public FastSequence<E> setValueComparator(FastComparator<? super E> comparator) {
 		_valueComparator = comparator;
 		return this;
 	}
@@ -600,13 +600,13 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 	}
 	// Overrides  to return a list (JDK1.5+).
 	@Override
-	public FastChain<E> unmodifiable() {
-		return new FastChain<E>(super.unmodifiable());
+	public FastSequence<E> unmodifiable() {
+		return new FastSequence<E>(super.unmodifiable());
 	}
 	// Overrides  to return a list (JDK1.5+).
 	@Override
-	public FastChain<E> shared() {
-		return new FastChain<E>(super.shared());
+	public FastSequence<E> shared() {
+		return new FastSequence<E>(super.shared());
 	}
 	/**
 	 * Returns a new node for this list; this method can be overriden by
@@ -861,9 +861,9 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 		}
 	}*/
 	/**
-	 * This class represents a {@link FastChain} node; it allows for direct
+	 * This class represents a {@link FastSequence} node; it allows for direct
 	 * iteration over the list {@link #getValue values}.
-	 * Custom {@link FastChain} may use a derived implementation.
+	 * Custom {@link FastSequence} may use a derived implementation.
 	 * For example:[code]
 	 *    static class MyList<E,X> extends FastList<E> {
 	 *        protected MyNode newNode() {
@@ -927,11 +927,11 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 				sl._tail = null;
 			}
 		};
-		private FastChain _list;
+		private FastSequence _list;
 		private Node _head;
 		private Node _tail;
 		private int _size;
-		public static SubList valueOf(FastChain list, Node head, Node tail, int size) {
+		public static SubList valueOf(FastSequence list, Node head, Node tail, int size) {
 			final SubList subList = (SubList) FACTORY.object();
 			subList._list = list;
 			subList._head = head;
@@ -1061,12 +1061,12 @@ public class FastChain<E> extends FastList<E> implements List<E>, Reusable {
 				i._nextNode = null;
 			}
 		};
-		private FastChain _list;
+		private FastSequence _list;
 		private Node _nextNode;
 		private Node _currentNode;
 		private int _length;
 		private int _nextIndex;
-		public static FastListIterator valueOf(FastChain list, Node nextNode, int nextIndex, int size) {
+		public static FastListIterator valueOf(FastSequence list, Node nextNode, int nextIndex, int size) {
 			final FastListIterator itr = (FastListIterator) FACTORY.object();
 			itr._list = list;
 			itr._nextNode = nextNode;

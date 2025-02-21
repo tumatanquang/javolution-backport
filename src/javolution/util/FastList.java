@@ -6,6 +6,9 @@ import java.util.ListIterator;
 import javolution.lang.Reusable;
 import javolution.util.internal.collection.SharedCollectionImpl;
 import javolution.util.internal.collection.UnmodifiableCollectionImpl;
+/**
+ * Skeleton for {@link FastTable} and {@link FastSequence}
+ */
 public abstract class FastList<E> extends FastCollection<E> implements List<E>, Reusable {
 	private static final long serialVersionUID = -3293995916577400839L;
 	@Override

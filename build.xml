@@ -1,12 +1,12 @@
 <project name="Javolution" default="no-args" basedir=".">
 	<description>
-		Javolution - Java(TM) Solution for Real-Time and Embedded Systems.
+		Javolution Backport - Java(TM) Solution for Real-Time and Embedded Systems.
 	</description>
 
 	<target name="_init">
 		<tstamp/>
 		<property name="library" value="javolution"/>
-		<property name="version" value="5.6.7"/>
+		<property name="version" value="5.6.8"/>
 		<property name="release" value="5"/>
 		<property name="src" value="src"/>
 		<property name="bin" value="bin"/>
@@ -88,11 +88,11 @@
 				<include name="**/doc-files/*"/>
 			</fileset>
 		</copy>
-		<javadoc sourcepath="${tmp}" destdir="${api}" windowtitle="Javolution v${version} API" overview="src/overview.html" author="true" version="true" classpath="${bin}" charset="${encoding}" encoding="${encoding}" docencoding="${encoding}" stylesheetfile="css/javadoc.css" splitindex="true">
+		<javadoc sourcepath="${tmp}" destdir="${api}" windowtitle="Javolution Backport v${version} API" overview="src/overview.html" author="true" version="true" classpath="${bin}" charset="${encoding}" encoding="${encoding}" docencoding="${encoding}" stylesheetfile="css/javadoc.css" splitindex="true">
 			<header>
 				<![CDATA[<A HREF="http://javolution.org">
 				<SPAN CLASS="style0">J</SPAN>
-				<SPAN CLASS="style1">avolution v${version} (${vm})</SPAN>
+				<SPAN CLASS="style1">avolution Backport v${version} (${vm})</SPAN>
 				</A>]]>
 			</header>
 			<bottom>

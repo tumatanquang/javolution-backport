@@ -110,7 +110,7 @@ public class FastTable<E> extends FastList<E> implements List<E>, Reusable, Rand
 			@Override
 			protected void notifyChange() {
 				FastTable.this.clear();
-				FastTable.this.addAll((FastChain) this.get());
+				FastTable.this.addAll((FastSequence) this.get());
 			}
 		};
 	}
@@ -417,7 +417,7 @@ public class FastTable<E> extends FastList<E> implements List<E>, Reusable, Rand
 	}
 	/**
 	 * Returns a view of the portion of this list between the specified
-	 * indexes (instance of {@link FastChain} allocated from the "stack" when
+	 * indexes (instance of {@link FastSequence} allocated from the "stack" when
 	 * executing in a {@link javolution.context.StackContext StackContext}).
 	 * If the specified indexes are equal, the returned list is empty.
 	 * The returned list is backed by this list, so non-structural changes in
