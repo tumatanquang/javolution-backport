@@ -14,7 +14,7 @@ package javolution.xml.stream;
  * @version 3.8, May 22, 2006
  */
 public class XMLStreamException extends Exception {
-	private static final long serialVersionUID = 2263856768132065761L;
+	private static final long serialVersionUID = 0x564;
 	/**
 	 * Holds the nested exception if any.
 	 */
