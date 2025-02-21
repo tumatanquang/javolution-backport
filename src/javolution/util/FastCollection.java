@@ -71,7 +71,7 @@ import javolution.xml.XMLSerializable;
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.4.5, March 23, 2010
  */
-public abstract class FastCollection<E> implements Collection<E>, Iterable<E>, XMLSerializable, Realtime {
+public abstract class FastCollection<E> implements Collection<E>, Iterable<E>, XMLSerializable, Serializable, Realtime {
 	private static final long serialVersionUID = 4766294467168709155L;
 	/**
 	 * Default constructor.
@@ -169,27 +169,27 @@ public abstract class FastCollection<E> implements Collection<E>, Iterable<E>, X
 	 * <p>Note: This default implementation always throws
 	 *          <code>UnsupportedOperationException</code>.</p>
 	 *
-	 * @param value the value to be appended to this collection.
+	 * @param o the value to be appended to this collection.
 	 * @return <code>true</code> (as per the general contract of the
 	 *         <code>Collection.add</code> method).
 	 * @throws UnsupportedOperationException if not supported.
 	 */
-	public boolean add(E value) {
+	public boolean add(E o) {
 		throw new UnsupportedOperationException();
 	}
 	/**
 	 * Removes the first occurrence in this collection of the specified value
 	 * (optional operation).
 	 *
-	 * @param value the value to be removed from this collection.
+	 * @param o the value to be removed from this collection.
 	 * @return <code>true</code> if this collection contained the specified
 	 *         value; <code>false</code> otherwise.
 	 * @throws UnsupportedOperationException if not supported.
 	 */
-	public boolean remove(Object value) {
+	public boolean remove(Object o) {
 		final FastComparator valueComp = this.getValueComparator();
 		for(Record r = head(), end = tail(); (r = r.getNext()) != end;) {
-			if(valueComp.areEqual(value, valueOf(r))) {
+			if(valueComp.areEqual(o, valueOf(r))) {
 				delete(r);
 				return true;
 			}
@@ -219,15 +219,15 @@ public abstract class FastCollection<E> implements Collection<E>, Iterable<E>, X
 	/**
 	 * Indicates if this collection contains the specified value.
 	 *
-	 * @param value the value whose presence in this collection
+	 * @param o the value whose presence in this collection
 	 *        is to be tested.
 	 * @return <code>true</code> if this collection contains the specified
 	 *         value;<code>false</code> otherwise.
 	 */
-	public boolean contains(Object value) {
+	public boolean contains(Object o) {
 		final FastComparator valueComp = this.getValueComparator();
 		for(Record r = head(), end = tail(); (r = r.getNext()) != end;) {
-			if(valueComp.areEqual(value, valueOf(r)))
+			if(valueComp.areEqual(o, valueOf(r)))
 				return true;
 		}
 		return false;
@@ -340,7 +340,7 @@ public abstract class FastCollection<E> implements Collection<E>, Iterable<E>, X
 	 * @throws UnsupportedOperationException if <code>array.length < size()</code>
 	 */
 	public <T> T[] toArray(T[] array) {
-		int size = size();
+		final int size = size();
 		if(array.length < size)
 			throw new UnsupportedOperationException("Destination array too small");
 		if(array.length > size) {
@@ -401,7 +401,7 @@ public abstract class FastCollection<E> implements Collection<E>, Iterable<E>, X
 			return false; // 'this' is not a list but obj is!
 		if(!(obj instanceof Collection))
 			return false; // Can only compare collections.
-		Collection that = (Collection) obj;
+		final Collection that = (Collection) obj;
 		return this == that || this.size() == that.size() && containsAll(that);
 	}
 	private boolean equalsOrder(List that) {
@@ -409,11 +409,11 @@ public abstract class FastCollection<E> implements Collection<E>, Iterable<E>, X
 			return true;
 		if(this.size() != that.size())
 			return false;
-		Iterator thatIterator = that.iterator();
+		final Iterator thatIterator = that.iterator();
 		final FastComparator comp = this.getValueComparator();
 		for(Record r = head(), end = tail(); (r = r.getNext()) != end;) {
-			Object o1 = valueOf(r);
-			Object o2 = thatIterator.next();
+			final Object o1 = valueOf(r);
+			final Object o2 = thatIterator.next();
 			if(!comp.areEqual(o1, o2))
 				return false;
 		}
@@ -653,12 +653,12 @@ public abstract class FastCollection<E> implements Collection<E>, Iterable<E>, X
 			}
 			public void remove() {
 				if(_index == 0)
-					throw new java.lang.IllegalStateException();
+					throw new IllegalStateException();
 				Object removed = _elements[_index - 1];
 				if(removed == NULL) // Double removed.
-					throw new java.lang.IllegalStateException();
+					throw new IllegalStateException();
 				_elements[_index - 1] = NULL;
-				_removed++;
+				++_removed;
 				synchronized(mutex) {
 					((List) fc).remove(_index - _removed);
 				}
@@ -679,7 +679,7 @@ public abstract class FastCollection<E> implements Collection<E>, Iterable<E>, X
 			}
 			public void remove() {
 				if(_next == null)
-					throw new java.lang.IllegalStateException();
+					throw new IllegalStateException();
 				fc.remove(_next);
 				_next = null;
 			}
