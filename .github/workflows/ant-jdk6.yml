@@ -1,0 +1,24 @@
+name: Build Javolution Backport (J2SE 1.6+)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Install JDK 6
+      run: |
+        chmod +x lib/jdk-6u45-linux-x64.bin
+        ./lib/jdk-6u45-linux-x64.bin
+
+    - name: Build Javolution Backport
+      run: ant -Dexecutable=$(pwd)/jdk1.6.0_45/bin/javac 1.6
+
+    - uses: actions/upload-artifact@v5
+      with:
+        name: Javolution v5.7.0 (J2SE 1.6+)
+        path: target/javolution-5.7.0.jar
+        compression-level: 9

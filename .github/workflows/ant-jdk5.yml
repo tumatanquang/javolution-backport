@@ -1,0 +1,24 @@
+name: Build Javolution Backport (J2SE 1.5+)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Install JDK 5
+      run: |
+        chmod +x lib/jdk-1_5_0_22-linux-amd64-direct.bin
+        ./lib/jdk-1_5_0_22-linux-amd64-direct.bin
+
+    - name: Build Javolution Backport
+      run: ant -Dexecutable=$(pwd)/jdk1.5.0_22/bin/javac 1.5
+
+    - uses: actions/upload-artifact@v5
+      with:
+        name: Javolution v5.7.0 (J2SE 1.5+)
+        path: target/javolution-5.7.0.jar
+        compression-level: 9

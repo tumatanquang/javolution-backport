@@ -1,0 +1,119 @@
+name: Build and release Javolution Backport artifact
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Install JDK 5
+      run: |
+        chmod +x lib/jdk-1_5_0_22-linux-amd64-direct.bin
+        ./lib/jdk-1_5_0_22-linux-amd64-direct.bin
+
+    - name: Build Javolution Backport (J2ME)
+      run: |
+        ant clean
+        ant -Dexecutable=$(pwd)/jdk1.5.0_22/bin/javac j2me
+
+    - name: Rename J2ME artifact
+      run: mv target/javolution-5.7.0.jar javolution-5.7.0_j2me.jar
+
+    - name: Build Javolution Backport (J2SE 1.4+)
+      run: |
+        ant clean
+        ant -Dexecutable=$(pwd)/jdk1.5.0_22/bin/javac 1.4
+
+    - name: Rename J2SE 1.4 artifact
+      run: mv target/javolution-5.7.0.jar javolution-5.7.0_jdk4.jar
+
+    - name: Build Javolution Backport (J2SE 1.5+)
+      run: |
+        ant clean
+        ant -Dexecutable=$(pwd)/jdk1.5.0_22/bin/javac 1.5
+
+    - name: Rename J2SE 1.5 artifact
+      run: mv target/javolution-5.7.0.jar javolution-5.7.0_jdk5.jar
+
+    - name: Install JDK 6
+      run: |
+        chmod +x lib/jdk-6u45-linux-x64.bin
+        ./lib/jdk-6u45-linux-x64.bin
+
+    - name: Build Javolution Backport (J2SE 1.6+)
+      run: |
+        ant clean
+        ant -Dexecutable=$(pwd)/jdk1.6.0_45/bin/javac 1.6
+
+    - name: Rename J2SE 1.6 artifact
+      run: mv target/javolution-5.7.0.jar javolution-5.7.0_jdk6.jar
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v5.7.0
+        release_name: v5.7.0
+        body: |
+          - Added the packages `javolution.util.concurrent` and `javolution.util.concurrent.locks` based on [Doug Lea's](https://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/intro.html) implementation.
+          - The following classes have been renamed:
+          	- `MutableList` → `FastAbstractList`.
+          	- `SharedCollectionImpl` → `FastSharedCollection`.
+          	- `UnmodifiableCollectionImpl` → `FastUnmodifiableCollection`.
+        draft: false
+        prerelease: false
+
+    - name: Upload J2ME artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./javolution-5.7.0_j2me.jar
+        asset_name: javolution-5.7.0_j2me.jar
+        asset_content_type: application/java-archive
+
+    - name: Upload J2SE 1.4 artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./javolution-5.7.0_jdk4.jar
+        asset_name: javolution-5.7.0_jdk4.jar
+        asset_content_type: application/java-archive
+
+    - name: Upload J2SE 1.5 artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./javolution-5.7.0_jdk5.jar
+        asset_name: javolution-5.7.0_jdk5.jar
+        asset_content_type: application/java-archive
+
+    - name: Upload J2SE 1.6 artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./javolution-5.7.0_jdk6.jar
+        asset_name: javolution-5.7.0_jdk6.jar
+        asset_content_type: application/java-archive

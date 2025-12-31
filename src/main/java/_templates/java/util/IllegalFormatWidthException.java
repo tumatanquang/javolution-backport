@@ -1,0 +1,19 @@
+/*
+ * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
+ * Copyright (C) 2005 - Javolution (http://javolution.org/)
+ * All rights reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software is
+ * freely granted, provided that this notice is preserved.
+ */
+package _templates.java.util;
+public class IllegalFormatWidthException extends IllegalFormatException {
+	private static final long serialVersionUID = 8443239826220268524L;
+	int _width;
+	public IllegalFormatWidthException(int w) {
+		_width = w;
+	}
+	public int getWidth() {
+		return _width;
+	}
+}
