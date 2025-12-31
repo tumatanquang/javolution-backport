@@ -12,14 +12,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import javolution.lang.Reusable;
-import javolution.util.FastList;
+import javolution.util.MutableList;
 /**
  * A shared view over a collection (reads-write locks).
  */
-public final class UnmodifiableCollectionImpl<E> extends FastList<E> implements List<E>, Reusable {
+public final class UnmodifiableCollectionImpl<E> extends MutableList<E> implements List<E>, Reusable {
 	private static final long serialVersionUID = 1099576476014476826L;
-	private final FastList<E> fc;
-	public UnmodifiableCollectionImpl(FastList<E> inner) {
+	private final MutableList<E> fc;
+	public UnmodifiableCollectionImpl(MutableList<E> inner) {
 		fc = inner;
 	}
 	@Override

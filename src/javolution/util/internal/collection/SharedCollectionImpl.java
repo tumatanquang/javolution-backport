@@ -12,16 +12,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import javolution.lang.Reusable;
-import javolution.util.FastList;
+import javolution.util.MutableList;
 import javolution.util.internal.ReadWriteLockImpl;
 /**
  * A shared view over a collection (reads-write locks).
  */
-public final class SharedCollectionImpl<E> extends FastList<E> implements List<E>, Reusable {
+public final class SharedCollectionImpl<E> extends MutableList<E> implements List<E>, Reusable {
 	private static final long serialVersionUID = -2136254040285582378L;
-	private final FastList<E> fc;
+	private final MutableList<E> fc;
 	private final ReadWriteLockImpl lock;
-	public SharedCollectionImpl(FastList<E> inner) {
+	public SharedCollectionImpl(MutableList<E> inner) {
 		fc = inner;
 		lock = new ReadWriteLockImpl();
 	}

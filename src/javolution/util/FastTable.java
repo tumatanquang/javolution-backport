@@ -25,7 +25,7 @@ import javolution.util.internal.FastComparator;
 /**
  * <p> This class represents a random access collection with real-time behavior
  *     (smooth capacity increase).</p>
- *     <img src="doc-files/list-add.png"/>
+ *     <img src="doc-files/FastTable-WCET.png"/>
  *
  * <p> This class has the following advantages over the widely used
  *     <code>java.util.ArrayList</code>:<ul>
@@ -40,9 +40,10 @@ import javolution.util.internal.FastComparator;
  *  <p> Iterations over the {@link FastTable} values are faster when
  *      performed using the {@link #get} method rather than using collection
  *      records or iterators:[code]
- *     for (int i = 0, n = table.size(); i < n; i++) {
- *          table.get(i);
- *     }[/code]</p>
+ *      FastTable<String> table = new FastTable<String>();
+ *      for (int i = 0, n = table.size(); i < n; ++i) {
+ *          String value = table.get(i);
+ *      }[/code]</p>
  *
  *  <p> {@link FastTable} supports {@link #sort sorting} in place (quick sort)
  *      using the {@link FastCollection#getValueComparator() value comparator}
@@ -51,7 +52,7 @@ import javolution.util.internal.FastComparator;
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.4.5, August 20, 2007
  */
-public class FastTable<E> extends FastList<E> implements List<E>, Reusable, RandomAccess {
+public class FastTable<E> extends MutableList<E> implements List<E>, Reusable, RandomAccess {
 	private static final long serialVersionUID = -2258186618781046936L;
 	/**
 	 * Holds the factory for this fast table.
@@ -110,7 +111,7 @@ public class FastTable<E> extends FastList<E> implements List<E>, Reusable, Rand
 			@Override
 			protected void notifyChange() {
 				FastTable.this.clear();
-				FastTable.this.addAll((FastSequence) this.get());
+				FastTable.this.addAll((FastList) this.get());
 			}
 		};
 	}
@@ -179,7 +180,7 @@ public class FastTable<E> extends FastList<E> implements List<E>, Reusable, Rand
 	 */
 	@Override
 	public Iterator<E> iterator() {
-		return listIterator();
+		return FastTableIterator.valueOf(this, 0, 0, _size);
 	}
 	/**
 	 * Appends the specified value to the end of this table.
@@ -417,7 +418,7 @@ public class FastTable<E> extends FastList<E> implements List<E>, Reusable, Rand
 	}
 	/**
 	 * Returns a view of the portion of this list between the specified
-	 * indexes (instance of {@link FastSequence} allocated from the "stack" when
+	 * indexes (instance of {@link FastList} allocated from the "stack" when
 	 * executing in a {@link javolution.context.StackContext StackContext}).
 	 * If the specified indexes are equal, the returned list is empty.
 	 * The returned list is backed by this list, so non-structural changes in
